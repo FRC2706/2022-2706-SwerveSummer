@@ -4,24 +4,58 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Encoder;
+import frc.robot.config.Config;
 
 public class SwerveModule {
 
-    // CODE: Prepare 2 variables for both SparkMaxs, use the object called CANSparkMax
+    CANSparkMax spark1; //steer
+    CANSparkMax spark2; //turn
+
+    SparkMaxPIDController m_pidController_1;
+    SparkMaxPIDController m_PidController_2;
+
+    RelativeEncoder m_encoder_1;
+    RelativeEncoder m_encoder_2;
 
     /**
      * Constructs a SwerveModule.
      */
-    public SwerveModule(/** CODE: Add parameters here for CONSTANTS that are specific to each module */) {
+    public SwerveModule() {
 
         // CODE: Construct both CANSparkMax objects and set all the nessecary settings (get CONSTANTS from Config or from the parameters of the constructor)
+        spark1 = new CANSparkMax(Config.CANID_FRONT_LEFT_DRIVE, MotorType.kBrushless);
+        spark2 = new CANSparkMax(Config.CANID_FRONT_LEFT_STEERING, MotorType.kBrushless);
+
+        spark1.restoreFactoryDefaults();
+        spark2.restoreFactoryDefaults();
+
+        spark1.setInverted(false);
+        spark2.setInverted(false);
+
+        spark1.setIdleMode(IdleMode.kCoast);
+        spark2.setIdleMode(IdleMode.kCoast);
+
+        m_pidController_1 = spark1.getPIDController();
+        m_PidController_2 = spark2.getPIDController();
+
+        m_encoder_1 = spark1.getEncoder();
+        m_encoder_2 = spark2.getEncoder();
 
     }
 
     /**
-     * Returns the current state of the module.
+     * Returns the current state o1f the module.
      *
      * @return The current state of the module.
      */
@@ -43,8 +77,15 @@ public class SwerveModule {
         
         
         // CODE: Pass the velocity (which is in meters per second) to velocity PID on drive SparkMax. (VelocityConversionFactor set so SparkMax wants m/s)
+        double target_RPM = velocity*m_encoder_1.getVelocityConversionFactor();
+        m_pidController_1.setReference(target_RPM, ControlType.kVelocity);
 
         // CODE: Pass the angle (which is in radians) to position PID on steering SparkMax. (PositionConversionFactor set so SparkMax wants radians)
+
+        double angle_Radians = (angle.getRadians())*m_encoder_2.getPositionConversionFactor();
+        m_pidController_1.setReference(angle_Radians, ControlType.kPosition);
+
+
 
     }
 
