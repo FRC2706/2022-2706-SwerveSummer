@@ -10,7 +10,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.config.Config;
 import frc.robot.subsystems.DriveSubsystem;
@@ -84,7 +83,7 @@ public class SwerveCommandMerge extends SwerveControllerCommand {
             Config.kThetaControllerConstraints);  // Trapizoid profile
 
             
-        // Allows the robot to allows go the shorter way around the circle to the target.
+        // Allows the robot to allows go the shorter direction around the circle to the target.
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         return thetaController;
