@@ -40,18 +40,37 @@ public class SwerveModule {
         spark1.restoreFactoryDefaults();
         spark2.restoreFactoryDefaults();
 
+        //@todo: need to calibrate
         spark1.setInverted(false);
         spark2.setInverted(false);
 
         spark1.setIdleMode(IdleMode.kCoast);
         spark2.setIdleMode(IdleMode.kCoast);
 
+        //@todo: need to calibrate
         m_pidController_1 = spark1.getPIDController();
         m_PidController_2 = spark2.getPIDController();
 
+        //@todo: calibrate PIDF for spark1
+        m_pidController_1.setOutputRange(-1, 1);
+        m_pidController_1.setFF(0);
+        m_pidController_1.setP(0);
+        m_pidController_1.setI(0);
+        m_pidController_1.setD(0);
+        m_pidController_1.setIZone(10);
+     
+        //@todo: calibrate PIDF for spark2
+        
         m_encoder_1 = spark1.getEncoder();
         m_encoder_2 = spark2.getEncoder();
 
+        //m/s = RPM*factor1
+        double factor1 = Math.PI * Config.kWheelDiameterMeters / 60;
+        m_encoder_1.setVelocityConversionFactor(factor1);
+        
+        //radius = #revolution*factor2
+        double factor2 = 2* Math.PI;
+        m_encoder_2.setPositionConversionFactor(factor2);
     }
 
     /**
@@ -71,21 +90,19 @@ public class SwerveModule {
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
         Rotation2d measuredAngle = getSteeringAngle();
+  
         SwerveModuleState state = SwerveModuleState.optimize(desiredState, measuredAngle);
+
         double velocity = state.speedMetersPerSecond;
         Rotation2d angle = ContinousPIDSparkMax.calculate(state.angle, measuredAngle);
-        
-        
-        // CODE: Pass the velocity (which is in meters per second) to velocity PID on drive SparkMax. (VelocityConversionFactor set so SparkMax wants m/s)
-        double target_RPM = velocity*m_encoder_1.getVelocityConversionFactor();
-        m_pidController_1.setReference(target_RPM, ControlType.kVelocity);
 
-        // CODE: Pass the angle (which is in radians) to position PID on steering SparkMax. (PositionConversionFactor set so SparkMax wants radians)
+        // CODE: Pass the velocity (which is in meters per second) to velocity PID on drive SparkMax. 
+        //(VelocityConversionFactor set so SparkMax wants m/s)
+        m_pidController_1.setReference(velocity, ControlType.kVelocity);
 
-        double angle_Radians = (angle.getRadians())*m_encoder_2.getPositionConversionFactor();
-        m_pidController_1.setReference(angle_Radians, ControlType.kPosition);
-
-
+        // CODE: Pass the angle (which is in radians) to position PID on steering SparkMax. 
+        //(PositionConversionFactor set so SparkMax wants radians)
+        m_PidController_2.setReference(angle.getRadians(), ControlType.kPosition);      
 
     }
 
@@ -96,9 +113,9 @@ public class SwerveModule {
      */
     public double getVelocity() {
 
-        // CODE: Read encoder velocity from drive SparkMax and return m/s. (VelocityConversionFactor set so SparkMax returns m/s))
-
-        return 0.0;
+        // CODE: Read encoder velocity from drive SparkMax and return m/s. 
+        //(VelocityConversionFactor set so SparkMax returns m/s))
+        return m_encoder_1.getVelocity();
     }
 
     /**
@@ -110,8 +127,11 @@ public class SwerveModule {
 
         // CODE: Read encoder position from steering SparkMax and return Rotation2d.
         // The PositionConversionFactor is set so SparkMax returns radians, the default constructor of Rotation2d wants radians.
+        double returnEncoderPosition = m_encoder_2.getPosition();
 
-        return new Rotation2d(0);
+        //make sure the angle is [-pi, pi]
+        double currentAngle = returnEncoderPosition % (2*Math.PI) - Math.PI;
+        return new Rotation2d(currentAngle);
     }
 
     /**
@@ -131,6 +151,7 @@ public class SwerveModule {
     public void stopMotors() {
 
         // CODE: Call the stopMotors method in the CANSparkMax (provided with all WPILib motor controller objects)
-
+        spark1.stopMotor();
+        spark2.stopMotor();
     }
 }

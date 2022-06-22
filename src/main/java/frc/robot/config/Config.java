@@ -22,6 +22,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
  */
 public final class Config {
     /* Drive Constants */
+
+    public static final int SWERVE_MODULE_NUMBER = 1;
+
     public static final int CANID_FRONT_LEFT_DRIVE = 1;
     public static final int CANID_REAR_LEFT_DRIVE = 3;
     public static final int CANID_FRONT_RIGHT_DRIVE = 5;
@@ -78,6 +81,9 @@ public final class Config {
     public static final double kPXController = 1;
     public static final double kPYController = 1;
     public static final double kPThetaController = 1;
+
+    //Use this to check value: m_encoder_2.getCountsPerRevolution();
+    public static final double kCountsPerRevolution = 4096;  
 
     // Constraint for the motion profiled robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
