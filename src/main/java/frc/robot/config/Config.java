@@ -7,6 +7,8 @@ package frc.robot.config;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -32,6 +34,9 @@ public final class Config {
     public static final int CANID_FRONT_RIGHT_STEERING = 6;
     public static final int CANID_REAR_RIGHT_STEERING = 8;
 
+    public static final double turningEncoderConstant = (2*Math.PI)/8.0;
+    public static final double drivetrainEncoderConstant = 0.1016*Math.PI*(1/(60*7.615));
+
     public static final boolean INVERTED_FRONT_LEFT_DRIVE = false;
     public static final boolean INVERTED_REAR_LEFT_DRIVE = false;
     public static final boolean INVERTED_FRONT_RIGHT_DRIVE = false;
@@ -42,11 +47,19 @@ public final class Config {
     public static final boolean INVERTED_FRONT_RIGHT_STEERING = false;
     public static final boolean INVERTED_REAR_RIGHT_STEERING = false;
 
+    public static final int KLAMPREYCHANNEL_FRONT_LEFT= 0;
+    public static final int KLAMPREYCHANNEL_REAR_LEFT = 1;
+    public static final int KLAMPREYCHANNEL_FRONT_RIGHT = 2;
+    public static final int KLAMPREYCHANNEL_REAR_RIGHT = 3;     
+    
     // Distance between centers of right and left wheels on robot
     public static final double kTrackWidth = 0.5;
 
     // Distance between front and back wheels on robot
     public static final double kWheelBase = 0.7;
+    //public FluidConstant<Double> kLampreyOffset;
+    //kLampreyOffset = new FluidConstant<>("Lamprey Offset Radians", lampreyOffset, true)
+                    //.registerToTable(NetworkTableInstance.getDefault().getTable(tableName));
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(kWheelBase / 2, kTrackWidth / 2),

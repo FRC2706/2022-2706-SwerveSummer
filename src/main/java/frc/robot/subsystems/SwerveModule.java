@@ -4,20 +4,69 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import frc.robot.config.Config;
+import frc.robot.config.FluidConstant;
 
 public class SwerveModule {
 
     // CODE: Prepare 2 variables for both SparkMaxs, use the object called CANSparkMax
-
+    private CANSparkMax m_driveMotor;
+    private CANSparkMax m_turningMotor;
+    private SparkMaxPIDController m_drivePIDController;
+    private SparkMaxPIDController m_turningPIDController;
+    private RelativeEncoder m_driveEncoder;
+    private RelativeEncoder m_turningEncoder;
+    private AnalogPotentiometer m_lamprey;
+    //public static FluidConstant<Double> LAMPREY_OFFSET = new FluidConstant<> ("Lamprey_Offset", 100).registerToTable(Config.);
     /**
      * Constructs a SwerveModule.
      */
-    public SwerveModule(/** CODE: Add parameters here for CONSTANTS that are specific to each module */) {
+    public SwerveModule(int driveCanID, boolean driveInverted, int turningCanID, boolean turningInverted, int kLampreyChannel) {
 
         // CODE: Construct both CANSparkMax objects and set all the nessecary settings (get CONSTANTS from Config or from the parameters of the constructor)
+        m_driveMotor = new CANSparkMax(driveCanID, MotorType.kBrushless);
 
+        m_driveMotor.restoreFactoryDefaults();
+        m_driveMotor.setInverted(driveInverted);
+        m_driveMotor.setIdleMode(IdleMode.kCoast);
+
+        m_drivePIDController = m_driveMotor.getPIDController();
+        m_drivePIDController.setP(0);
+        m_drivePIDController.setI(0);
+        m_drivePIDController.setD(0);
+        m_drivePIDController.setIZone(0);
+        m_drivePIDController.setFF(0);
+
+        m_driveEncoder = m_driveMotor.getEncoder();
+        m_driveEncoder.setVelocityConversionFactor(Config.drivetrainEncoderConstant);
+        
+        m_turningPIDController = m_turningMotor.getPIDController();
+        m_turningMotor = new CANSparkMax(turningCanID, MotorType.kBrushless);
+
+        m_driveMotor.restoreFactoryDefaults();
+        m_driveMotor.setInverted(turningInverted);
+        m_driveMotor.setIdleMode(IdleMode.kCoast);
+
+        m_turningPIDController.setP(0);
+        m_turningPIDController.setI(0);
+        m_turningPIDController.setD(0);
+        m_turningPIDController.setIZone(0);
+        m_turningPIDController.setFF(0);
+
+        m_turningEncoder = m_turningMotor.getEncoder();
+        m_turningEncoder.setPositionConversionFactor(Config.turningEncoderConstant);
+
+        m_lamprey = new AnalogPotentiometer(kLampreyChannel, 2*Math.PI);
     }
 
     /**
@@ -43,9 +92,10 @@ public class SwerveModule {
         
         
         // CODE: Pass the velocity (which is in meters per second) to velocity PID on drive SparkMax. (VelocityConversionFactor set so SparkMax wants m/s)
+        m_drivePIDController.setReference(velocity, ControlType.kVelocity);
 
         // CODE: Pass the angle (which is in radians) to position PID on steering SparkMax. (PositionConversionFactor set so SparkMax wants radians)
-
+        m_turningPIDController.setReference(angle.getRadians(), ControlType.kPosition);
     }
 
     /**
@@ -56,8 +106,8 @@ public class SwerveModule {
     public double getVelocity() {
 
         // CODE: Read encoder velocity from drive SparkMax and return m/s. (VelocityConversionFactor set so SparkMax returns m/s))
-
-        return 0.0;
+        
+        return m_driveEncoder.getVelocity();
     }
 
     /**
@@ -70,7 +120,7 @@ public class SwerveModule {
         // CODE: Read encoder position from steering SparkMax and return Rotation2d.
         // The PositionConversionFactor is set so SparkMax returns radians, the default constructor of Rotation2d wants radians.
 
-        return new Rotation2d(0);
+        return new Rotation2d(m_turningEncoder.getPosition());
     }
 
     /**
@@ -81,15 +131,18 @@ public class SwerveModule {
         
         // CODE: You can attempt this if you want but this will probably be done together in the 2nd or 3rd meeting.
         // CODE: Read value from Lamprey and set internal Neo encoder for the steering SparkMax (but need to add an offset first)
+        //double offset = ;
+        double lampreyRadians = m_lamprey.get();
 
+        //m_turningEncoder.setPosition(lampreyRadians + offset);
     }
 
     /**
      * Standard stop motors method for every subsystem.
      */
     public void stopMotors() {
-
         // CODE: Call the stopMotors method in the CANSparkMax (provided with all WPILib motor controller objects)
-
+        m_driveMotor.stopMotor();
+        m_turningMotor.stopMotor();
     }
 }
