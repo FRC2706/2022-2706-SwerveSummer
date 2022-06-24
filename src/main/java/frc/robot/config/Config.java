@@ -24,15 +24,15 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  */
 public final class Config {
     /* Drive Constants */
-    public static final int CANID_FRONT_LEFT_DRIVE = 1;
-    public static final int CANID_REAR_LEFT_DRIVE = 3;
-    public static final int CANID_FRONT_RIGHT_DRIVE = 5;
-    public static final int CANID_REAR_RIGHT_DRIVE = 7;
+    public static final int CANID_FRONT_LEFT_DRIVE = 6;
+    public static final int CANID_REAR_LEFT_DRIVE = 0;
+    public static final int CANID_FRONT_RIGHT_DRIVE = 0;
+    public static final int CANID_REAR_RIGHT_DRIVE = 0;
 
-    public static final int CANID_FRONT_LEFT_STEERING = 2;
-    public static final int CANID_REAR_LEFT_STEERING = 4;
-    public static final int CANID_FRONT_RIGHT_STEERING = 6;
-    public static final int CANID_REAR_RIGHT_STEERING = 8;
+    public static final int CANID_FRONT_LEFT_STEERING = 5;
+    public static final int CANID_REAR_LEFT_STEERING = 0;
+    public static final int CANID_FRONT_RIGHT_STEERING = 0;
+    public static final int CANID_REAR_RIGHT_STEERING = 0;
 
     public static final double turningEncoderConstant = (2*Math.PI)/8.0;
     public static final double drivetrainEncoderConstant = 0.1016*Math.PI*(1/(60*7.615));
@@ -47,23 +47,49 @@ public final class Config {
     public static final boolean INVERTED_FRONT_RIGHT_STEERING = false;
     public static final boolean INVERTED_REAR_RIGHT_STEERING = false;
 
-    public static final int KLAMPREYCHANNEL_FRONT_LEFT= 0;
-    public static final int KLAMPREYCHANNEL_REAR_LEFT = 1;
-    public static final int KLAMPREYCHANNEL_FRONT_RIGHT = 2;
-    public static final int KLAMPREYCHANNEL_REAR_RIGHT = 3;     
+    public static final int KLAMPREYCHANNEL_FRONT_LEFT= 7;
+    public static final int KLAMPREYCHANNEL_REAR_LEFT = 0;
+    public static final int KLAMPREYCHANNEL_FRONT_RIGHT = 0;
+    public static final int KLAMPREYCHANNEL_REAR_RIGHT = 0;  
+    
+    public static final double drive_kIZone = 0;
+    public static final double drive_kFF = 0.00015; // These can also be module specific.
+    public static final double drive_kP = 0.00015; // Hopefully they won't need to be.
+    public static final double drive_kI = 0.; // Depends on hardware differences.
+    public static final double drive_kD = 0.02;
+
+    public static final double steering_kFF = 0;
+    public static final double steering_kP = 0.5;
+    public static final double steering_kI = 0.0;
+    public static final double steering_kD = 0.0;
+    public static final double steering_kIZone = 0; //5 degrees
     
     // Distance between centers of right and left wheels on robot
     public static final double kTrackWidth = 0.5;
 
     // Distance between front and back wheels on robot
     public static final double kWheelBase = 0.7;
-    //public FluidConstant<Double> kLampreyOffset;
-    //kLampreyOffset = new FluidConstant<>("Lamprey Offset Radians", lampreyOffset, true)
-                    //.registerToTable(NetworkTableInstance.getDefault().getTable(tableName));
+    public static double kLampreyOffsetFL = 0.0;
+    public static double kLampreyOffsetRL = 0.0;
+    public static double kLampreyOffsetFR = 0.0;
+    public static double kLampreyOffsetRR = 0.0;
+    public static FluidConstant<Double> fluid_LampreyOffsetFL = new FluidConstant<>("Lamprey Offset Radians", kLampreyOffsetFL, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+    
+    public static FluidConstant<Double> fluid_LampreyOffsetRL = new FluidConstant<>("Lamprey Offset Radians", kLampreyOffsetRL, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+
+    public static FluidConstant<Double> fluid_LampreyOffsetFR = new FluidConstant<>("Lamprey Offset Radians", kLampreyOffsetFR, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+
+     public static FluidConstant<Double> fluid_LampreyOffsetRR = new FluidConstant<>("Lamprey Offset Radians", kLampreyOffsetRR, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+
+
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),   
             new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 

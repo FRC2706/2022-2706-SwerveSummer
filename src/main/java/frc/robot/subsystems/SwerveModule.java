@@ -27,12 +27,13 @@ public class SwerveModule {
     private RelativeEncoder m_driveEncoder;
     private RelativeEncoder m_turningEncoder;
     private AnalogPotentiometer m_lamprey;
-    //public static FluidConstant<Double> LAMPREY_OFFSET = new FluidConstant<> ("Lamprey_Offset", 100).registerToTable(Config.);
+    private FluidConstant<Double> lampreyOffset;
     /**
      * Constructs a SwerveModule.
      */
-    public SwerveModule(int driveCanID, boolean driveInverted, int turningCanID, boolean turningInverted, int kLampreyChannel) {
+    public SwerveModule(int driveCanID, boolean driveInverted, int turningCanID, boolean turningInverted, int kLampreyChannel, FluidConstant<Double> lampreyOffset) {
 
+        this.lampreyOffset = lampreyOffset;
         // CODE: Construct both CANSparkMax objects and set all the nessecary settings (get CONSTANTS from Config or from the parameters of the constructor)
         m_driveMotor = new CANSparkMax(driveCanID, MotorType.kBrushless);
 
@@ -41,27 +42,27 @@ public class SwerveModule {
         m_driveMotor.setIdleMode(IdleMode.kCoast);
 
         m_drivePIDController = m_driveMotor.getPIDController();
-        m_drivePIDController.setP(0);
-        m_drivePIDController.setI(0);
-        m_drivePIDController.setD(0);
-        m_drivePIDController.setIZone(0);
-        m_drivePIDController.setFF(0);
+        m_drivePIDController.setP(Config.drive_kP);
+        m_drivePIDController.setI(Config.drive_kI);
+        m_drivePIDController.setD(Config.drive_kD);
+        m_drivePIDController.setIZone(Config.drive_kIZone);
+        m_drivePIDController.setFF(Config.drive_kFF);
 
         m_driveEncoder = m_driveMotor.getEncoder();
         m_driveEncoder.setVelocityConversionFactor(Config.drivetrainEncoderConstant);
         
-        m_turningPIDController = m_turningMotor.getPIDController();
         m_turningMotor = new CANSparkMax(turningCanID, MotorType.kBrushless);
+        m_turningPIDController = m_turningMotor.getPIDController();
 
         m_driveMotor.restoreFactoryDefaults();
         m_driveMotor.setInverted(turningInverted);
         m_driveMotor.setIdleMode(IdleMode.kCoast);
 
-        m_turningPIDController.setP(0);
-        m_turningPIDController.setI(0);
-        m_turningPIDController.setD(0);
-        m_turningPIDController.setIZone(0);
-        m_turningPIDController.setFF(0);
+        m_turningPIDController.setP(Config.steering_kP);
+        m_turningPIDController.setI(Config.steering_kI);
+        m_turningPIDController.setD(Config.steering_kD);
+        m_turningPIDController.setIZone(Config.steering_kIZone);
+        m_turningPIDController.setFF(Config.steering_kFF);
 
         m_turningEncoder = m_turningMotor.getEncoder();
         m_turningEncoder.setPositionConversionFactor(Config.turningEncoderConstant);
@@ -131,10 +132,10 @@ public class SwerveModule {
         
         // CODE: You can attempt this if you want but this will probably be done together in the 2nd or 3rd meeting.
         // CODE: Read value from Lamprey and set internal Neo encoder for the steering SparkMax (but need to add an offset first)
-        //double offset = ;
+        double offset = lampreyOffset.get();
         double lampreyRadians = m_lamprey.get();
 
-        //m_turningEncoder.setPosition(lampreyRadians + offset);
+        m_turningEncoder.setPosition(lampreyRadians + offset);
     }
 
     /**
