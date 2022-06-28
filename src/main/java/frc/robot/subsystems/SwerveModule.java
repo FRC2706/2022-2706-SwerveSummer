@@ -102,7 +102,7 @@ public class SwerveModule {
 
         // CODE: Pass the angle (which is in radians) to position PID on steering SparkMax. 
         //(PositionConversionFactor set so SparkMax wants radians)
-        m_PidController_2.setReference(angle.getRadians(), ControlType.kPosition);      
+        m_PidController_2.setReference(angle.getRadians()+ getCurrSteeringPosition(), ControlType.kPosition);      
 
     }
 
@@ -120,6 +120,7 @@ public class SwerveModule {
 
     /**
      * Returns the angle the wheel is pointing in a Rotation2d.
+     * angle range: [-pi, pi]
      * 
      * @return angle of the wheel as a Rotation2d
      */
@@ -132,6 +133,14 @@ public class SwerveModule {
         //make sure the angle is [-pi, pi]
         double currentAngle = returnEncoderPosition % (2*Math.PI) - Math.PI;
         return new Rotation2d(currentAngle);
+    }
+
+    /**
+     * Returns the current accumulated position in radius of the steering wheel.
+     * @return
+     */
+    public double getCurrSteeringPosition() {
+        return m_encoder_2.getPosition();
     }
 
     /**

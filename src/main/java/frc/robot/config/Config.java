@@ -23,14 +23,16 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public final class Config {
     /* Drive Constants */
 
+    //lamprey analog i/o = 7
+    
     public static final int SWERVE_MODULE_NUMBER = 1;
 
-    public static final int CANID_FRONT_LEFT_DRIVE = 1;
+    public static final int CANID_FRONT_LEFT_DRIVE = 6;//1
     public static final int CANID_REAR_LEFT_DRIVE = 3;
     public static final int CANID_FRONT_RIGHT_DRIVE = 5;
     public static final int CANID_REAR_RIGHT_DRIVE = 7;
 
-    public static final int CANID_FRONT_LEFT_STEERING = 2;
+    public static final int CANID_FRONT_LEFT_STEERING = 5;//2;
     public static final int CANID_REAR_LEFT_STEERING = 4;
     public static final int CANID_FRONT_RIGHT_STEERING = 6;
     public static final int CANID_REAR_RIGHT_STEERING = 8;
