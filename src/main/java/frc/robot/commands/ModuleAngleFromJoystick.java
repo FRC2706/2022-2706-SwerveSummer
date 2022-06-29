@@ -17,6 +17,9 @@ public class ModuleAngleFromJoystick extends CommandBase {
     private final Supplier<Double> xAxis;
     private final Supplier<Double> yAxis;
 
+    private final double DEAD_BAND = 0.3;
+    private final double MAX_SPEED = 1.0;
+
     /** Creates a new AngleTest. */
     public ModuleAngleFromJoystick(Supplier<Double> xAxis, Supplier<Double> yAxis, SubsystemBase requirement) { 
 
@@ -35,16 +38,14 @@ public class ModuleAngleFromJoystick extends CommandBase {
     @Override
     public void execute() {
         // Both axis of a single stick on a joystick
-        double x = xAxis.get();
-        double y = -yAxis.get();
+        double x = -xAxis.get();
+        double y = yAxis.get();
         
         if (Math.abs(x) < 0.3 && Math.abs(y) < 0.3) {
-            // Do nothing
+            DriveSubsystem.getInstance().stopMotors();
         } else {
-            x = Math.signum(x) * (Math.abs(x) - 0.3) / 0.7;
-            y = Math.signum(y) * (Math.abs(y) - 0.3) / 0.7;
-
-            double velocity = Math.sqrt(Math.pow(x,2) + Math.pow(y,2)); 
+            double hypo = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+            double velocity = (hypo - DEAD_BAND) / (1.0 - DEAD_BAND) * MAX_SPEED;
             Rotation2d angle = new Rotation2d(x, y); 
 
             SwerveModuleState state = new SwerveModuleState(velocity, angle);
