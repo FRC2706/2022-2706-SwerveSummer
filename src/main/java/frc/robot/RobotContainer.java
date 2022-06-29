@@ -55,8 +55,8 @@ public class RobotContainer {
 
         // SINGLE MODULE CONTROL, REMOVE WHEN SWITCHING TO 4 MODULES
         DriveSubsystem.getInstance().setDefaultCommand(
-                    new ModuleAngleFromJoystick(() -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X), 
-                                                () -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y),
+                    new ModuleAngleFromJoystick(() -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y), 
+                                                () -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X),
                                                 DriveSubsystem.getInstance()));
     }
 
