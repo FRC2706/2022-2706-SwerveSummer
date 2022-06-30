@@ -52,11 +52,11 @@ public final class Config {
     public static final int KLAMPREYCHANNEL_FRONT_RIGHT = 0;
     public static final int KLAMPREYCHANNEL_REAR_RIGHT = 0;  
     
-    public static final double drive_kIZone = 0;
-    public static final double drive_kFF = 0.00015; // These can also be module specific.
-    public static final double drive_kP = 0.00015; // Hopefully they won't need to be.
-    public static final double drive_kI = 0.; // Depends on hardware differences.
-    public static final double drive_kD = 0.02;
+    public static final double drive_kIZone = 0.0;
+    public static final double drive_kFF = 0.000153/drivetrainEncoderConstant; // These can also be module specific.
+    public static final double drive_kP = 0.00009/drivetrainEncoderConstant; // Hopefully they won't need to be.
+    public static final double drive_kI = 0.0; // Depends on hardware differences.
+    public static final double drive_kD =0.0004/drivetrainEncoderConstant;
 
     public static final double steering_kFF = 0;
     public static final double steering_kP = 0.5;
@@ -69,7 +69,7 @@ public final class Config {
 
     // Distance between front and back wheels on robot
     public static final double kWheelBase = 0.7;
-    public static double kLampreyOffsetFL = 0.0;
+    public static double kLampreyOffsetFL = -1.518436;
     public static double kLampreyOffsetRL = 0.0;
     public static double kLampreyOffsetFR = 0.0;
     public static double kLampreyOffsetRR = 0.0;

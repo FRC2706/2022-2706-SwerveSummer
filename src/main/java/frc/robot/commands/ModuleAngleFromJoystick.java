@@ -39,6 +39,7 @@ public class ModuleAngleFromJoystick extends CommandBase {
         double y = -yAxis.get();
         
         if (Math.abs(x) < 0.3 && Math.abs(y) < 0.3) {
+            DriveSubsystem.getInstance().stopMotors();
             // Do nothing
         } else {
             x = Math.signum(x) * (Math.abs(x) - 0.3) / 0.7;

@@ -54,9 +54,9 @@ public class SwerveModule {
         m_turningMotor = new CANSparkMax(turningCanID, MotorType.kBrushless);
         m_turningPIDController = m_turningMotor.getPIDController();
 
-        m_driveMotor.restoreFactoryDefaults();
-        m_driveMotor.setInverted(turningInverted);
-        m_driveMotor.setIdleMode(IdleMode.kCoast);
+        m_turningMotor.restoreFactoryDefaults();
+        m_turningMotor.setInverted(turningInverted);
+        m_turningMotor.setIdleMode(IdleMode.kCoast);
 
         m_turningPIDController.setP(Config.steering_kP);
         m_turningPIDController.setI(Config.steering_kI);
@@ -75,7 +75,7 @@ public class SwerveModule {
      *
      * @return The current state of the module.
      */
-    public SwerveModuleState getState() {
+    public SwerveModuleState getState() {   
         return new SwerveModuleState(getVelocity(), getSteeringAngle());
     }
 
