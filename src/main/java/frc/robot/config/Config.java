@@ -69,7 +69,7 @@ public final class Config {
 
     // Distance between front and back wheels on robot
     public static final double kWheelBase = 0.7;
-    public static double kLampreyOffsetFL = -1.518436;
+    public static double kLampreyOffsetFL = -0.818;
     public static double kLampreyOffsetRL = 0.0;
     public static double kLampreyOffsetFR = 0.0;
     public static double kLampreyOffsetRR = 0.0;

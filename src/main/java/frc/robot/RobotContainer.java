@@ -9,7 +9,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -19,7 +18,6 @@ import frc.robot.commands.ModuleAngleFromJoystick;
 import frc.robot.config.Config;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -57,8 +55,8 @@ public class RobotContainer {
 
         // SINGLE MODULE CONTROL, REMOVE WHEN SWITCHING TO 4 MODULES
         DriveSubsystem.getInstance().setDefaultCommand(
-                    new ModuleAngleFromJoystick(() -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X), 
-                                                () -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y),
+                    new ModuleAngleFromJoystick(() -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y), 
+                                                () -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X),
                                                 DriveSubsystem.getInstance()));
     }
 
@@ -69,13 +67,6 @@ public class RobotContainer {
      * then calling passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-            SwerveModuleState state = new SwerveModuleState(0, Rotation2d.fromDegrees(0.0));
-            Command setSteering1 = new RunCommand(()->DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state}));
-            new JoystickButton(driverStick, XboxController.Button.kX.value).whenHeld(setSteering1);
-
-            SwerveModuleState state2 = new SwerveModuleState(0.5, Rotation2d.fromDegrees(0.0));
-            Command setSteering2 = new RunCommand(()->DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state2}));
-            new JoystickButton(driverStick, XboxController.Button.kA.value).whenHeld(setSteering2);
     }
 
     /**
