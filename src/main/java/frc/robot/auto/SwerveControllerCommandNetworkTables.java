@@ -48,10 +48,11 @@ public class SwerveControllerCommandNetworkTables extends CommandBase {
   private final Supplier<Rotation2d> m_desiredRotation;
 
   // Added networktables
-  NetworkTable table = NetworkTableInstance.getDefault().getTable("SwerveDrive");
+  NetworkTable table = NetworkTableInstance.getDefault().getTable("Auto");
   NetworkTableEntry xError = table.getEntry("xError");
   NetworkTableEntry yError = table.getEntry("yError");
   NetworkTableEntry rotError = table.getEntry("rotError");
+  NetworkTableEntry rotSetpoint = table.getEntry("rotSetpoint");
   //
   
   /**
@@ -167,11 +168,14 @@ public class SwerveControllerCommandNetworkTables extends CommandBase {
     Pose2d poseError = desiredState.poseMeters.relativeTo(currentPose);
     xError.setDouble(poseError.getX());
     yError.setDouble(poseError.getY());
-    rotError.setDouble(poseError.getRotation().getDegrees());
+
+    Rotation2d desiredRotation = m_desiredRotation.get();
+    rotSetpoint.setDouble(desiredRotation.getDegrees());
+    rotError.setDouble(desiredRotation.getDegrees() - currentPose.getRotation().getDegrees());
     //
 
     var targetChassisSpeeds =
-        m_controller.calculate(currentPose, desiredState, m_desiredRotation.get());
+        m_controller.calculate(currentPose, desiredState, desiredRotation);
     var targetModuleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
 
     m_outputModuleStates.accept(targetModuleStates);
