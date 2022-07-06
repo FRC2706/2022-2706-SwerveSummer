@@ -5,7 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.ErrorCode;
-import com.revrobotics.CANError;
+import com.revrobotics.REVLibError;
 
 public class CheckError {
     private CheckError() {
@@ -17,8 +17,8 @@ public class CheckError {
         }
     }
 
-    public static void rev(CANError error, String message) {
-        if (error != CANError.kOk) {
+    public static void rev(REVLibError error, String message) {
+        if (error != REVLibError.kOk) {
             throw new RuntimeException(String.format("%s: %s", message, error.toString()));
         }
     }
