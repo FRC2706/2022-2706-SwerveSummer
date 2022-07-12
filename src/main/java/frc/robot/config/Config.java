@@ -57,32 +57,61 @@ public final class Config {
     public static final double drive_kP = 0.00009/drivetrainEncoderConstant; // Hopefully they won't need to be.
     public static final double drive_kI = 0.0; // Depends on hardware differences.
     public static final double drive_kD =0.0004/drivetrainEncoderConstant;
+	public static FluidConstant<Double> fluid_drive_kFF = new FluidConstant<>("Drive kFF", drive_kFF, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+
+    public static FluidConstant<Double> fluid_drive_kP = new FluidConstant<>("Drive kP", drive_kP, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+
+	public static FluidConstant<Double> fluid_drive_kI = new FluidConstant<>("Drive kI", drive_kI, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+
+
+	public static FluidConstant<Double> fluid_drive_kD = new FluidConstant<>("Drive kD", drive_kD, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+
+	public static FluidConstant<Double> fluid_drive_kIZone = new FluidConstant<>("Drive kIZone", drive_kI, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+    // Distance between centers of right and left wheels on robot
 
     public static final double steering_kFF = 0;
     public static final double steering_kP = 0.5;
     public static final double steering_kI = 0.0;
     public static final double steering_kD = 0.0;
     public static final double steering_kIZone = 0; //5 degrees
-    
+    public static FluidConstant<Double> fluid_steering_kFF = new FluidConstant<>("Steering kFF", steering_kFF, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+
+    public static FluidConstant<Double> fluid_steering_kP = new FluidConstant<>("Steering kP", steering_kP, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+
+	public static FluidConstant<Double> fluid_steering_kI = new FluidConstant<>("Steering kI", steering_kI, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+
+	public static FluidConstant<Double> fluid_steering_kD = new FluidConstant<>("Steering kD", steering_kD, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+					
+	public static FluidConstant<Double> fluid_steering_kIZone = new FluidConstant<>("Steering kIZone", steering_kI, true)
+                    .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
     // Distance between centers of right and left wheels on robot
     public static final double kTrackWidth = 0.5;
 
     // Distance between front and back wheels on robot
     public static final double kWheelBase = 0.7;
-    public static double kLampreyOffsetFL = -0.818;
+    public static double kLampreyOffsetFL = 0.0;
     public static double kLampreyOffsetRL = 0.0;
     public static double kLampreyOffsetFR = 0.0;
     public static double kLampreyOffsetRR = 0.0;
-    public static FluidConstant<Double> fluid_LampreyOffsetFL = new FluidConstant<>("Lamprey Offset Radians", kLampreyOffsetFL, true)
+    public static FluidConstant<Double> fluid_LampreyOffsetFL = new FluidConstant<>("Lamprey Offset Radians FL", kLampreyOffsetFL, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
     
-    public static FluidConstant<Double> fluid_LampreyOffsetRL = new FluidConstant<>("Lamprey Offset Radians", kLampreyOffsetRL, true)
+    public static FluidConstant<Double> fluid_LampreyOffsetRL = new FluidConstant<>("Lamprey Offset Radians RL", kLampreyOffsetRL, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 
-    public static FluidConstant<Double> fluid_LampreyOffsetFR = new FluidConstant<>("Lamprey Offset Radians", kLampreyOffsetFR, true)
+    public static FluidConstant<Double> fluid_LampreyOffsetFR = new FluidConstant<>("Lamprey Offset Radians FR", kLampreyOffsetFR, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 
-     public static FluidConstant<Double> fluid_LampreyOffsetRR = new FluidConstant<>("Lamprey Offset Radians", kLampreyOffsetRR, true)
+     public static FluidConstant<Double> fluid_LampreyOffsetRR = new FluidConstant<>("Lamprey Offset Radians RR", kLampreyOffsetRR, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 
 

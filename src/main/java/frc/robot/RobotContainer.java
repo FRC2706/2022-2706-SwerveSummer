@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -18,6 +19,7 @@ import frc.robot.commands.ModuleAngleFromJoystick;
 import frc.robot.config.Config;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -40,6 +42,26 @@ public class RobotContainer {
     public RobotContainer() {
         // Configure the button bindings
         configureButtonBindings();
+
+        Command updateModulesPID = new InstantCommand(DriveSubsystem.getInstance()::updateModulesPID);
+        new JoystickButton(driverStick, XboxController.Button.kStart.value).whenPressed(updateModulesPID);
+
+        Command updateLampreyOffset = new InstantCommand(DriveSubsystem.getInstance()::resetEncodersFromLamprey);
+        new JoystickButton(driverStick, XboxController.Button.kBack.value).whenPressed(updateLampreyOffset);
+
+
+        Command angleSetPoint1 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{new SwerveModuleState(0, Rotation2d.fromDegrees(0))}));
+        new JoystickButton(driverStick, XboxController.Button.kA.value).whenPressed(angleSetPoint1).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors));
+        
+        Command angleSetPoint2 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{new SwerveModuleState(0, Rotation2d.fromDegrees(90))}));
+        new JoystickButton(driverStick, XboxController.Button.kB.value).whenPressed(angleSetPoint2);
+        
+        Command speedSetPoint1 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{new SwerveModuleState(0.5, Rotation2d.fromDegrees(0))}));
+        new JoystickButton(driverStick, XboxController.Button.kX.value).whenPressed(speedSetPoint1).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors));
+        
+        Command speedSetPoint2 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{new SwerveModuleState(1, Rotation2d.fromDegrees(0))}));
+        new JoystickButton(driverStick, XboxController.Button.kY.value).whenPressed(speedSetPoint2).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors));
+
 
         // Configure default commands
         // DriveSubsystem.getInstance().setDefaultCommand(

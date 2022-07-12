@@ -20,7 +20,7 @@ public class DriveSubsystem extends SubsystemBase {
     private static DriveSubsystem instance;
 
     // Robot swerve modules
-    private final SwerveModule m_frontLeft = new SwerveModule(Config.CANID_FRONT_LEFT_DRIVE, Config.INVERTED_FRONT_LEFT_DRIVE, Config.CANID_FRONT_LEFT_STEERING, Config.INVERTED_FRONT_LEFT_STEERING, Config.KLAMPREYCHANNEL_FRONT_LEFT, Config.fluid_LampreyOffsetFL);
+    private final SwerveModule m_frontLeft = new SwerveModule(Config.CANID_FRONT_LEFT_DRIVE, Config.INVERTED_FRONT_LEFT_DRIVE, Config.CANID_FRONT_LEFT_STEERING, Config.INVERTED_FRONT_LEFT_STEERING, Config.KLAMPREYCHANNEL_FRONT_LEFT, Config.fluid_LampreyOffsetFL, "FL");
 
     // private final SwerveModule m_rearLeft = new SwerveModule(/** ADD PARAMETERS HERE */);
 
@@ -138,6 +138,10 @@ public class DriveSubsystem extends SubsystemBase {
         // m_rearLeft.stopMotors();
         // m_frontRight.stopMotors();
         // m_rearRight.stopMotors();
+    }
+
+    public void updateModulesPID(){
+        m_frontLeft.updatePIDValues();
     }
 
     public void resetEncodersFromLamprey() {
