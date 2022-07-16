@@ -23,7 +23,7 @@ public class SwerveModule {
     CANSparkMax spark2; //turn
 
     SparkMaxPIDController m_pidController_1;
-    SparkMaxPIDController m_PidController_2;
+    SparkMaxPIDController m_pidController_2;
 
     RelativeEncoder m_encoder_1;
     RelativeEncoder m_encoder_2;
@@ -49,7 +49,7 @@ public class SwerveModule {
 
         //@todo: need to calibrate
         m_pidController_1 = spark1.getPIDController();
-        m_PidController_2 = spark2.getPIDController();
+        m_pidController_2 = spark2.getPIDController();
 
         //@todo: calibrate PIDF for spark1
         m_pidController_1.setOutputRange(-1, 1);
@@ -60,12 +60,18 @@ public class SwerveModule {
         m_pidController_1.setIZone(10);
      
         //@todo: calibrate PIDF for spark2
-        
+        m_pidController_2.setOutputRange(-1, 1);
+        m_pidController_2.setFF(0);
+        m_pidController_2.setP(0);
+        m_pidController_2.setI(0);
+        m_pidController_2.setD(0);
+        m_pidController_2.setIZone(10);
+
         m_encoder_1 = spark1.getEncoder();
         m_encoder_2 = spark2.getEncoder();
 
         //m/s = RPM*factor1
-        double factor1 = Math.PI * Config.kWheelDiameterMeters / 60;
+        double factor1 = Math.PI * Config.kWheelDiameterMeters / 60.;
         m_encoder_1.setVelocityConversionFactor(factor1);
         
         //radius = #revolution*factor2
@@ -88,9 +94,10 @@ public class SwerveModule {
      * @param desiredState Desired state with speed and angle.
      */
     public void setDesiredState(SwerveModuleState desiredState) {
-        // Optimize the reference state to avoid spinning further than 90 degrees
+        
         Rotation2d measuredAngle = getSteeringAngle();
   
+        // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = SwerveModuleState.optimize(desiredState, measuredAngle);
 
         double velocity = state.speedMetersPerSecond;
@@ -102,7 +109,7 @@ public class SwerveModule {
 
         // CODE: Pass the angle (which is in radians) to position PID on steering SparkMax. 
         //(PositionConversionFactor set so SparkMax wants radians)
-        m_PidController_2.setReference(angle.getRadians()+ getCurrSteeringPosition(), ControlType.kPosition);      
+        m_pidController_2.setReference(angle.getRadians()+ getCurrSteeringPosition(), ControlType.kPosition);      
 
     }
 
