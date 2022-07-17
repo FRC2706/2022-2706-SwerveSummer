@@ -165,8 +165,10 @@ public class SwerveModule {
         // CODE: Read value from Lamprey and set internal Neo encoder for the steering SparkMax (but need to add an offset first)
         double offset = lampreyOffset.get();
         double lampreyRadians = m_lamprey.get();
+        //System.out.println(lampreyRadians);
 
-        m_turningEncoder.setPosition(lampreyRadians + offset);
+        //m_turningEncoder.setPosition(lampreyRadians + offset);
+        m_turningEncoder.setPosition(0);
     }
 
     public void updatePIDValues(){

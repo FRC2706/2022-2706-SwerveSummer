@@ -47,16 +47,16 @@ public final class Config {
     public static final boolean INVERTED_FRONT_RIGHT_STEERING = false;
     public static final boolean INVERTED_REAR_RIGHT_STEERING = false;
 
-    public static final int KLAMPREYCHANNEL_FRONT_LEFT= 7;
+    public static final int KLAMPREYCHANNEL_FRONT_LEFT = 2;
     public static final int KLAMPREYCHANNEL_REAR_LEFT = 0;
     public static final int KLAMPREYCHANNEL_FRONT_RIGHT = 0;
     public static final int KLAMPREYCHANNEL_REAR_RIGHT = 0;  
     
-    public static final double drive_kIZone = 0.0;
-    public static final double drive_kFF = 0.000153/drivetrainEncoderConstant; // These can also be module specific.
-    public static final double drive_kP = 0.00009/drivetrainEncoderConstant; // Hopefully they won't need to be.
-    public static final double drive_kI = 0.0; // Depends on hardware differences.
-    public static final double drive_kD =0.0004/drivetrainEncoderConstant;
+    public static final double drive_kIZone = 0.15;
+    public static final double drive_kFF = 0.25; // These can also be module specific.
+    public static final double drive_kP = 0.2; // Hopefully they won't need to be.
+    public static final double drive_kI = 0.002; // Depends on hardware differences.
+    public static final double drive_kD =1.0;
 	public static FluidConstant<Double> fluid_drive_kFF = new FluidConstant<>("Drive kFF", drive_kFF, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 
@@ -75,10 +75,10 @@ public final class Config {
     // Distance between centers of right and left wheels on robot
 
     public static final double steering_kFF = 0;
-    public static final double steering_kP = 0.5;
-    public static final double steering_kI = 0.0;
-    public static final double steering_kD = 0.0;
-    public static final double steering_kIZone = 0; //5 degrees
+    public static final double steering_kP = 0.8;
+    public static final double steering_kI = 0.016;
+    public static final double steering_kD = 1.6;
+    public static final double steering_kIZone = 0.05; //5 degrees
     public static FluidConstant<Double> fluid_steering_kFF = new FluidConstant<>("Steering kFF", steering_kFF, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 
