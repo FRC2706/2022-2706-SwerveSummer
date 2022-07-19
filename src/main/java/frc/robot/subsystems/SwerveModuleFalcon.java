@@ -21,29 +21,40 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.CheckError;
 import frc.robot.config.Config;
 import frc.robot.config.FConfig;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
 
 public class SwerveModuleFalcon {
 
     TalonFX driveFalcon;
     TalonFX steeringFalcon;
     CANCoder encoder;
-
+    private NetworkTable swerveModuleTable;
+    private NetworkTableEntry desiredSpeedEntry;
+    private NetworkTableEntry desiredAngleEntry;
+    private NetworkTableEntry currentSpeedEntry;
+    private NetworkTableEntry currentAngleEntry;
+    private NetworkTableEntry speedError;
+    private NetworkTableEntry angleError;
+    private NetworkTableEntry currentCanCoderEntry;
     /**
      * Constructs a SwerveModule.
      */
     public SwerveModuleFalcon(int driveCanID, TalonFXInvertType driveInverted, boolean driveSensorPhase, 
                               int steeringCanID, TalonFXInvertType steeringInverted, boolean steeringSensorPhase,
-                              int encoderCanID, double encoderOffset) {
+                              int encoderCanID, double encoderOffset, String ModuleName) {
 
         // Drive
         driveFalcon = new TalonFX(driveCanID);
                 
         TalonFXConfiguration driveConfiguration = new TalonFXConfiguration();
-        driveConfiguration.slot0.kP = Config.drive_kP;
-        driveConfiguration.slot0.kI = Config.drive_kI;
-        driveConfiguration.slot0.kD = Config.drive_kD;
-        driveConfiguration.slot0.kF = Config.drive_kFF;
-        driveConfiguration.slot0.integralZone = Config.drive_kIZone;
+        driveConfiguration.slot0.kP = Config.fluid_drive_kP.get();
+        driveConfiguration.slot0.kI = Config.fluid_drive_kI.get();
+        driveConfiguration.slot0.kD = Config.fluid_drive_kD.get();
+        driveConfiguration.slot0.kF = Config.fluid_drive_kFF.get();
+        driveConfiguration.slot0.integralZone = Config.fluid_drive_kIZone.get();
         driveConfiguration.voltageCompSaturation = 12.0; //12.0 volts is the default for Mk4 (need to add to Config.java)
         driveConfiguration.supplyCurrLimit.currentLimit = 80.0; // 80 amps is the default for Mk4 drive (need to add to Config.java)
         driveConfiguration.supplyCurrLimit.enable = true;
@@ -62,11 +73,11 @@ public class SwerveModuleFalcon {
         steeringFalcon = new TalonFX(steeringCanID);
                 
         TalonFXConfiguration steeringConfiguration = new TalonFXConfiguration();
-        steeringConfiguration.slot0.kP = Config.steering_kP;
-        steeringConfiguration.slot0.kI = Config.steering_kI;
-        steeringConfiguration.slot0.kD = Config.steering_kD;
-        steeringConfiguration.slot0.kF = Config.steering_kFF;
-        steeringConfiguration.slot0.integralZone = Config.steering_kIZone;
+        steeringConfiguration.slot0.kP = Config.fluid_steering_kP.get();
+        steeringConfiguration.slot0.kI = Config.fluid_steering_kI.get();
+        steeringConfiguration.slot0.kD = Config.fluid_steering_kD.get();
+        steeringConfiguration.slot0.kF = Config.fluid_steering_kFF.get();
+        steeringConfiguration.slot0.integralZone = Config.fluid_steering_kIZone.get();
         steeringConfiguration.voltageCompSaturation = 12.0; //12.0 volts is the default for Mk4 (need to add to Config.java)
         steeringConfiguration.supplyCurrLimit.currentLimit = 20.0; // 20 amps is the default for Mk4 steering (need to add to Config.java)
         steeringConfiguration.supplyCurrLimit.enable = true;
@@ -92,6 +103,17 @@ public class SwerveModuleFalcon {
         CheckError.ctre(encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, FConfig.CANCODER_STATUS_FRAME_SENSOR_DATA, FConfig.CAN_TIMEOUT_SHORT), "Failed to configure CANCoder update rate");
     
         updateSteeringFromCanCoder();
+
+        String tableName = "Swerve Chassis/SwerveModule" + ModuleName;
+        swerveModuleTable = NetworkTableInstance.getDefault().getTable(tableName);
+
+        desiredSpeedEntry = swerveModuleTable.getEntry("Desired speed (m/s)");
+        desiredAngleEntry = swerveModuleTable.getEntry("Desired angle (radians)");
+        currentSpeedEntry = swerveModuleTable.getEntry("Current speed (m/s)");
+        currentAngleEntry = swerveModuleTable.getEntry("Current angle (radians)");
+        speedError = swerveModuleTable.getEntry("speed Error");
+        angleError = swerveModuleTable.getEntry("angle Error");
+        currentCanCoderEntry = swerveModuleTable.getEntry("CanCoder measurement");
     }
 
     /**
@@ -110,6 +132,7 @@ public class SwerveModuleFalcon {
      */
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
+        double measuredVelocity = getVelocity();
         Rotation2d measuredAngle = getSteeringAngle();
         SwerveModuleState state = SwerveModuleState.optimize(desiredState, measuredAngle);
         double velocity = state.speedMetersPerSecond;
@@ -117,6 +140,13 @@ public class SwerveModuleFalcon {
         
         driveFalcon.set(ControlMode.Velocity, velocity / FConfig.DRIVE_SENSOR_VEL_CONVERSION);
         steeringFalcon.set(ControlMode.Position, angle.getRadians() / FConfig.STEERING_SENSOR_POS_CONVERSION);
+
+        desiredSpeedEntry.setDouble(velocity);
+        desiredAngleEntry.setDouble(angle.getDegrees());
+        currentSpeedEntry.setDouble(measuredVelocity);
+        currentAngleEntry.setDouble(measuredAngle.getDegrees());
+        speedError.setDouble(velocity - measuredVelocity);
+        angleError.setDouble(angle.getDegrees() - measuredAngle.getDegrees());
     }
 
     /**
@@ -144,6 +174,26 @@ public class SwerveModuleFalcon {
     public void updateSteeringFromCanCoder() {
         double angle = Math.toRadians(encoder.getAbsolutePosition());
         CheckError.ctre(driveFalcon.setSelectedSensorPosition(angle / FConfig.STEERING_SENSOR_POS_CONVERSION, 0, FConfig.CAN_TIMEOUT_SHORT), "Failed to set Falcon 500 encoder position");
+        currentCanCoderEntry.setDouble(angle);
+    }
+
+    public void updatePIDValues(){
+        TalonFXConfiguration driveConfiguration = new TalonFXConfiguration();
+
+        driveConfiguration.slot0.kP = Config.fluid_drive_kP.get();
+        driveConfiguration.slot0.kI = Config.fluid_drive_kI.get();
+        driveConfiguration.slot0.kD = Config.fluid_drive_kD.get();
+        driveConfiguration.slot0.kF = Config.fluid_drive_kFF.get();
+        driveConfiguration.slot0.integralZone = Config.fluid_drive_kIZone.get();
+        
+        TalonFXConfiguration steeringConfiguration = new TalonFXConfiguration();
+
+        steeringConfiguration.slot0.kP = Config.fluid_steering_kP.get();
+        steeringConfiguration.slot0.kI = Config.fluid_steering_kI.get();
+        steeringConfiguration.slot0.kD = Config.fluid_steering_kD.get();
+        steeringConfiguration.slot0.kF = Config.fluid_steering_kFF.get();
+        steeringConfiguration.slot0.integralZone = Config.fluid_steering_kIZone.get();
+        
     }
 
     /**
