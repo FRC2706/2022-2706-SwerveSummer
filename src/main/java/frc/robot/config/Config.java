@@ -4,6 +4,8 @@
 
 package frc.robot.config;
 
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -37,20 +39,30 @@ public final class Config {
     public static final double turningEncoderConstant = (2*Math.PI)/8.0;
     public static final double drivetrainEncoderConstant = 0.1016*Math.PI*(1/(60*7.615));
 
-    public static final boolean INVERTED_FRONT_LEFT_DRIVE = false;
-    public static final boolean INVERTED_REAR_LEFT_DRIVE = false;
-    public static final boolean INVERTED_FRONT_RIGHT_DRIVE = false;
-    public static final boolean INVERTED_REAR_RIGHT_DRIVE = false;
+    public static final TalonFXInvertType INVERTED_FRONT_LEFT_DRIVE = TalonFXInvertType.Clockwise;
+    public static final TalonFXInvertType INVERTED_REAR_LEFT_DRIVE = TalonFXInvertType.Clockwise;
+    public static final TalonFXInvertType INVERTED_FRONT_RIGHT_DRIVE = TalonFXInvertType.Clockwise;
+    public static final TalonFXInvertType INVERTED_REAR_RIGHT_DRIVE = TalonFXInvertType.Clockwise;
 
-    public static final boolean INVERTED_FRONT_LEFT_STEERING = false;
-    public static final boolean INVERTED_REAR_LEFT_STEERING = false;
-    public static final boolean INVERTED_FRONT_RIGHT_STEERING = false;
-    public static final boolean INVERTED_REAR_RIGHT_STEERING = false;
+    public static final TalonFXInvertType INVERTED_FRONT_LEFT_STEERING = TalonFXInvertType.CounterClockwise;
+    public static final TalonFXInvertType INVERTED_REAR_LEFT_STEERING = TalonFXInvertType.CounterClockwise;
+    public static final TalonFXInvertType INVERTED_FRONT_RIGHT_STEERING = TalonFXInvertType.CounterClockwise;
+    public static final TalonFXInvertType INVERTED_REAR_RIGHT_STEERING = TalonFXInvertType.CounterClockwise;
+	
+	public static final boolean SENSOR_PHASE_FRONT_LEFT_DRIVE = true;
+	public static final boolean SENSOR_PHASE_REAR_LEFT_DRIVE = true;
+	public static final boolean SENSOR_PHASE_FRONT_RIGHT_DRIVE = true;
+	public static final boolean SENSOR_PHASE_REAR_RIGHT_DRIVE = true;
 
-    public static final int KLAMPREYCHANNEL_FRONT_LEFT = 2;
-    public static final int KLAMPREYCHANNEL_REAR_LEFT = 0;
-    public static final int KLAMPREYCHANNEL_FRONT_RIGHT = 0;
-    public static final int KLAMPREYCHANNEL_REAR_RIGHT = 0;  
+	public static final boolean SENSOR_PHASE_FRONT_LEFT_STEERING = true;
+	public static final boolean SENSOR_PHASE_REAR_LEFT_STEERING = true;
+	public static final boolean SENSOR_PHASE_FRONT_RIGHT_STEERING = true;
+	public static final boolean SENSOR_PHASE_REAR_RIGHT_STEERING = true;
+	
+    public static final int CANID_FRONT_LEFT_CANCODER = 12;
+    public static final int CANID_REAR_LEFT_CANCODER = 9;
+    public static final int CANID_FRONT_RIGHT_CANCODER = 11;
+    public static final int CANID_REAR_RIGHT_CANCODER = 10;  
     
     public static final double drive_kIZone = 0.15;
     public static final double drive_kFF = 0.25; // These can also be module specific.
@@ -60,7 +72,7 @@ public final class Config {
 	public static FluidConstant<Double> fluid_drive_kFF = new FluidConstant<>("Drive kFF", drive_kFF, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 
-    public static FluidConstant<Double> fluid_drive_kP = new FluidConstant<>("Drive kP", drive_kP, true)
+        public static FluidConstant<Double> fluid_drive_kP = new FluidConstant<>("Drive kP", drive_kP, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 
 	public static FluidConstant<Double> fluid_drive_kI = new FluidConstant<>("Drive kI", drive_kI, true)
@@ -151,4 +163,25 @@ public final class Config {
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
             kMaxAutoAngularSpeed, kMaxAutoAngularAcceleration);
 
+				/** Stuff added to handle Falcons */
+    public static final int CAN_TIMEOUT_SHORT = 100;
+    public static final int CAN_TIMEOUT_LONG = 250;
+    public static final int STATUS_FRAME_GENERAL_PERIOD_MS = 250;
+    public static final int CANCODER_STATUS_FRAME_SENSOR_DATA = 10;
+    public static final double TICKS_PER_ROTATION = 2048.0;
+    public static final double MK4_WHEEL_DIAMTER = 0.10033;
+
+    private static final double DRIVE_GEAR_REDUCTION = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0); // THIS IS FOR THE MK4_L1
+    private static final double DRIVE_SENSOR_POS_CONVERSION = Math.PI * MK4_WHEEL_DIAMTER * DRIVE_GEAR_REDUCTION / TICKS_PER_ROTATION;
+    public static final double DRIVE_SENSOR_VEL_CONVERSION = DRIVE_SENSOR_POS_CONVERSION * 10.0;
+
+    private static final double STEERING_GEAR_REDUCTION = (15.0 / 32.0) * (10.0 / 60.0); // THIS IS FOR THE MK4_L1
+    public static final double STEERING_SENSOR_POS_CONVERSION = 2.0 * Math.PI / TICKS_PER_ROTATION * STEERING_GEAR_REDUCTION;
+
+    public static final double FL_ENCODER_OFFSET = -(155 + 180);
+    public static final double FR_ENCODER_OFFSET = -(94 + 180);
+    public static final double RL_ENCODER_OFFSET = -(200 + 180);
+    public static final double RR_ENCODER_OFFSET = -(135 + 180);
+
+	
 }
