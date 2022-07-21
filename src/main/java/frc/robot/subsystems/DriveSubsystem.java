@@ -20,13 +20,13 @@ public class DriveSubsystem extends SubsystemBase {
     private static DriveSubsystem instance;
 
     // Robot swerve modules
-    private final SwerveModule m_frontLeft = new SwerveModule(Config.CANID_FRONT_LEFT_DRIVE, Config.INVERTED_FRONT_LEFT_DRIVE, Config.CANID_FRONT_LEFT_STEERING, Config.INVERTED_FRONT_LEFT_STEERING, Config.KLAMPREYCHANNEL_FRONT_LEFT, Config.fluid_LampreyOffsetFL, "FL");
+    private final SwerveModuleFalcon m_frontLeft = new SwerveModuleFalcon(Config.CANID_FRONT_LEFT_DRIVE, Config.INVERTED_FRONT_LEFT_DRIVE, Config.SENSOR_PHASE_FRONT_LEFT_DRIVE, Config.CANID_FRONT_LEFT_STEERING, Config.INVERTED_FRONT_LEFT_STEERING, Config.SENSOR_PHASE_FRONT_LEFT_STEERING, Config.KLAMPREYCHANNEL_FRONT_LEFT, Config.FL_ENCODER_OFFSET, "FL");
 
-    // private final SwerveModule m_rearLeft = new SwerveModule(/** ADD PARAMETERS HERE */);
+    private final SwerveModuleFalcon m_rearLeft = new SwerveModuleFalcon(Config.CANID_REAR_LEFT_DRIVE, Config.INVERTED_REAR_LEFT_DRIVE, Config.SENSOR_PHASE_REAR_LEFT_DRIVE, Config.CANID_REAR_LEFT_STEERING, Config.INVERTED_REAR_LEFT_STEERING, Config.SENSOR_PHASE_REAR_LEFT_STEERING, Config.KLAMPREYCHANNEL_REAR_LEFT, Config.RL_ENCODER_OFFSET, "RL");
 
-    // private final SwerveModule m_frontRight = new SwerveModule(/** ADD PARAMETERS HERE */);
+    private final SwerveModuleFalcon m_frontRight = new SwerveModuleFalcon(Config.CANID_FRONT_RIGHT_DRIVE, Config.INVERTED_FRONT_RIGHT_DRIVE, Config.SENSOR_PHASE_FRONT_RIGHT_DRIVE, Config.CANID_FRONT_RIGHT_STEERING, Config.INVERTED_FRONT_RIGHT_STEERING, Config.SENSOR_PHASE_FRONT_RIGHT_STEERING, Config.KLAMPREYCHANNEL_FRONT_RIGHT, Config.FR_ENCODER_OFFSET, "FR");
 
-    // private final SwerveModule m_rearRight = new SwerveModule(/** ADD PARAMETERS HERE */);
+    private final SwerveModuleFalcon m_rearRight = new SwerveModuleFalcon(Config.CANID_REAR_RIGHT_DRIVE, Config.INVERTED_REAR_RIGHT_DRIVE, Config.SENSOR_PHASE_REAR_RIGHT_DRIVE, Config.CANID_REAR_RIGHT_STEERING, Config.INVERTED_REAR_RIGHT_STEERING, Config.SENSOR_PHASE_REAR_RIGHT_STEERING, Config.KLAMPREYCHANNEL_REAR_RIGHT, Config.RR_ENCODER_OFFSET, "RR");
 
     // The gyro sensor
     private final PigeonIMU m_pigeon = new PigeonIMU(Config.CAN_PIGEON);
@@ -45,16 +45,16 @@ public class DriveSubsystem extends SubsystemBase {
     private DriveSubsystem() {
     }
 
-    // @Override
-    // public void periodic() {
-    //     // Update the odometry in the periodic block
-    //     m_odometry.update(
-    //             getHeadingRotation2d(),
-    //             m_frontLeft.getState(),
-    //             m_frontRight.getState(),
-    //             m_rearLeft.getState(),
-    //             m_rearRight.getState());
-    // }
+    @Override
+    public void periodic() {
+        // Update the odometry in the periodic block
+        m_odometry.update(
+                getHeadingRotation2d(),
+                m_frontLeft.getState(),
+                m_frontRight.getState(),
+                m_rearLeft.getState(),
+                m_rearRight.getState());
+    }
 
     /**
      * Returns the currently-estimated pose of the robot.
@@ -93,9 +93,9 @@ public class DriveSubsystem extends SubsystemBase {
         }
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Config.kMaxAttainableWheelSpeed);
         m_frontLeft.setDesiredState(swerveModuleStates[0]);
-    //     m_frontRight.setDesiredState(swerveModuleStates[1]);
-    //     m_rearLeft.setDesiredState(swerveModuleStates[2]);
-    //     m_rearRight.setDesiredState(swerveModuleStates[3]);
+        m_frontRight.setDesiredState(swerveModuleStates[1]);
+        m_rearLeft.setDesiredState(swerveModuleStates[2]);
+        m_rearRight.setDesiredState(swerveModuleStates[3]);
     }
 
     /**
@@ -107,9 +107,9 @@ public class DriveSubsystem extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(
                 desiredStates, Config.kMaxAttainableWheelSpeed);
         m_frontLeft.setDesiredState(desiredStates[0]);
-        // m_frontRight.setDesiredState(desiredStates[1]);
-        // m_rearLeft.setDesiredState(desiredStates[2]);
-        // m_rearRight.setDesiredState(desiredStates[3]);
+        m_frontRight.setDesiredState(desiredStates[1]);
+        m_rearLeft.setDesiredState(desiredStates[2]);
+        m_rearRight.setDesiredState(desiredStates[3]);
     }
 
     /**
@@ -135,20 +135,20 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public void stopMotors() {
         m_frontLeft.stopMotors();
-        // m_rearLeft.stopMotors();
-        // m_frontRight.stopMotors();
-        // m_rearRight.stopMotors();
+        m_rearLeft.stopMotors();
+        m_frontRight.stopMotors();
+        m_rearRight.stopMotors();
     }
 
     public void updateModulesPID(){
         m_frontLeft.updatePIDValues();
     }
 
-    public void resetEncodersFromLamprey() {
-        m_frontLeft.updateSteeringFromLamprey();
-        // m_frontRight.updateSteeringFromLamprey();
-        // m_rearLeft.updateSteeringFromLamprey();
-        // m_rearRight.updateSteeringFromLamprey();
+    public void resetEncodersFromCanCoder() {
+        m_frontLeft.updateSteeringFromCanCoder();
+        m_frontRight.updateSteeringFromCanCoder();
+        m_rearLeft.updateSteeringFromCanCoder();
+        m_rearRight.updateSteeringFromCanCoder();
     }
 
 }

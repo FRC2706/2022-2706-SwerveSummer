@@ -20,7 +20,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.CheckError;
 import frc.robot.config.Config;
-import frc.robot.config.FConfig;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -59,12 +58,12 @@ public class SwerveModuleFalcon {
         driveConfiguration.supplyCurrLimit.currentLimit = 80.0; // 80 amps is the default for Mk4 drive (need to add to Config.java)
         driveConfiguration.supplyCurrLimit.enable = true;
 
-        CheckError.ctre(driveFalcon.configAllSettings(driveConfiguration, FConfig.CAN_TIMEOUT_LONG), "Failed to configure drive Falcon 500 settings");
-        CheckError.ctre(driveFalcon.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, FConfig.CAN_TIMEOUT_SHORT), "Failed to set drive Falcon 500 feedback sensor");
-        CheckError.ctre(driveFalcon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, FConfig.STATUS_FRAME_GENERAL_PERIOD_MS, FConfig.CAN_TIMEOUT_SHORT), "Failed to configure drive Falcon status frame period");
+        CheckError.ctre(driveFalcon.configAllSettings(driveConfiguration, Config.CAN_TIMEOUT_LONG), "Failed to configure drive Falcon 500 settings");
+        CheckError.ctre(driveFalcon.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Config.CAN_TIMEOUT_SHORT), "Failed to set drive Falcon 500 feedback sensor");
+        CheckError.ctre(driveFalcon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, Config.STATUS_FRAME_GENERAL_PERIOD_MS, Config.CAN_TIMEOUT_SHORT), "Failed to configure drive Falcon status frame period");
 
-        driveFalcon.setInverted(TalonFXInvertType.Clockwise); // GRABBED FROM SDS CODE, MOVE TO Config.java
-        driveFalcon.setSensorPhase(true); // GRABBED FROM SDS CODE, MOVE TO Config.java
+        driveFalcon.setInverted(driveInverted); // GRABBED FROM SDS CODE, MOVE TO Config.java
+        driveFalcon.setSensorPhase(driveSensorPhase); // GRABBED FROM SDS CODE, MOVE TO Config.java
         driveFalcon.setNeutralMode(NeutralMode.Brake); // Need a Config.DRIVE_NEUTRAL_MODE
         driveFalcon.enableVoltageCompensation(true); // Related to driveConfiguration.voltageCompSaturation
         
@@ -82,12 +81,12 @@ public class SwerveModuleFalcon {
         steeringConfiguration.supplyCurrLimit.currentLimit = 20.0; // 20 amps is the default for Mk4 steering (need to add to Config.java)
         steeringConfiguration.supplyCurrLimit.enable = true;
 
-        CheckError.ctre(steeringFalcon.configAllSettings(steeringConfiguration, FConfig.CAN_TIMEOUT_LONG), "Failed to configure steering Falcon 500 settings");
-        CheckError.ctre(steeringFalcon.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, FConfig.CAN_TIMEOUT_SHORT), "Failed to set steering Falcon 500 feedback sensor");
-        CheckError.ctre(steeringFalcon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, FConfig.STATUS_FRAME_GENERAL_PERIOD_MS, FConfig.CAN_TIMEOUT_SHORT), "Failed to configure steering Falcon status frame period"); // Reduce CAN status frame rates
+        CheckError.ctre(steeringFalcon.configAllSettings(steeringConfiguration, Config.CAN_TIMEOUT_LONG), "Failed to configure steering Falcon 500 settings");
+        CheckError.ctre(steeringFalcon.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Config.CAN_TIMEOUT_SHORT), "Failed to set steering Falcon 500 feedback sensor");
+        CheckError.ctre(steeringFalcon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, Config.STATUS_FRAME_GENERAL_PERIOD_MS, Config.CAN_TIMEOUT_SHORT), "Failed to configure steering Falcon status frame period"); // Reduce CAN status frame rates
 
-        steeringFalcon.setSensorPhase(true); // GRABBED FROM SDS CODE, MOVE TO Config.java
-        steeringFalcon.setInverted(TalonFXInvertType.CounterClockwise); // GRABBED FROM SDS CODE, MOVE TO Config.java
+        steeringFalcon.setSensorPhase(steeringSensorPhase); // GRABBED FROM SDS CODE, MOVE TO Config.java
+        steeringFalcon.setInverted(steeringInverted); // GRABBED FROM SDS CODE, MOVE TO Config.java
         steeringFalcon.setNeutralMode(NeutralMode.Brake); // Need a Config.steering_NEUTRAL_MODE
         steeringFalcon.enableVoltageCompensation(true); // Related to steeringConfiguration.voltageCompSaturation
 
@@ -100,7 +99,7 @@ public class SwerveModuleFalcon {
 
         encoder = new CANCoder(encoderCanID);
         CheckError.ctre(encoder.configAllSettings(encoderConfiguration), "Failed to configure CANCoder");
-        CheckError.ctre(encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, FConfig.CANCODER_STATUS_FRAME_SENSOR_DATA, FConfig.CAN_TIMEOUT_SHORT), "Failed to configure CANCoder update rate");
+        CheckError.ctre(encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, Config.CANCODER_STATUS_FRAME_SENSOR_DATA, Config.CAN_TIMEOUT_SHORT), "Failed to configure CANCoder update rate");
     
         updateSteeringFromCanCoder();
 
@@ -138,8 +137,8 @@ public class SwerveModuleFalcon {
         double velocity = state.speedMetersPerSecond;
         Rotation2d angle = ContinousPIDSparkMax.calculate(state.angle, measuredAngle);
         
-        driveFalcon.set(ControlMode.Velocity, velocity / FConfig.DRIVE_SENSOR_VEL_CONVERSION);
-        steeringFalcon.set(ControlMode.Position, angle.getRadians() / FConfig.STEERING_SENSOR_POS_CONVERSION);
+        driveFalcon.set(ControlMode.Velocity, velocity / Config.DRIVE_SENSOR_VEL_CONVERSION);
+        steeringFalcon.set(ControlMode.Position, angle.getRadians() / Config.STEERING_SENSOR_POS_CONVERSION);
 
         desiredSpeedEntry.setDouble(velocity);
         desiredAngleEntry.setDouble(angle.getDegrees());
@@ -155,7 +154,7 @@ public class SwerveModuleFalcon {
      * @return meters per second of the wheel
      */
     public double getVelocity() {
-        return driveFalcon.getSelectedSensorVelocity() * FConfig.DRIVE_SENSOR_VEL_CONVERSION;
+        return driveFalcon.getSelectedSensorVelocity() * Config.DRIVE_SENSOR_VEL_CONVERSION;
     }
 
     /**
@@ -164,7 +163,7 @@ public class SwerveModuleFalcon {
      * @return angle of the wheel as a Rotation2d
      */
     public Rotation2d getSteeringAngle() {
-        return new Rotation2d(steeringFalcon.getSelectedSensorPosition() * FConfig.STEERING_SENSOR_POS_CONVERSION);
+        return new Rotation2d(steeringFalcon.getSelectedSensorPosition() * Config.STEERING_SENSOR_POS_CONVERSION);
     }
 
     /**
@@ -173,26 +172,22 @@ public class SwerveModuleFalcon {
      */
     public void updateSteeringFromCanCoder() {
         double angle = Math.toRadians(encoder.getAbsolutePosition());
-        CheckError.ctre(driveFalcon.setSelectedSensorPosition(angle / FConfig.STEERING_SENSOR_POS_CONVERSION, 0, FConfig.CAN_TIMEOUT_SHORT), "Failed to set Falcon 500 encoder position");
+        CheckError.ctre(driveFalcon.setSelectedSensorPosition(angle / Config.STEERING_SENSOR_POS_CONVERSION, 0, Config.CAN_TIMEOUT_SHORT), "Failed to set Falcon 500 encoder position");
         currentCanCoderEntry.setDouble(angle);
     }
 
     public void updatePIDValues(){
-        TalonFXConfiguration driveConfiguration = new TalonFXConfiguration();
+        driveFalcon.config_kP(0, Config.fluid_drive_kP.get(), Config.CAN_TIMEOUT_SHORT);
+        driveFalcon.config_kI(0, Config.fluid_drive_kI.get(), Config.CAN_TIMEOUT_SHORT);
+        driveFalcon.config_kD(0, Config.fluid_drive_kD.get(), Config.CAN_TIMEOUT_SHORT);
+        driveFalcon.config_kF(0, Config.fluid_drive_kFF.get(), Config.CAN_TIMEOUT_SHORT);
+        driveFalcon.config_IntegralZone(0, Config.fluid_drive_kIZone.get(), Config.CAN_TIMEOUT_SHORT);
 
-        driveConfiguration.slot0.kP = Config.fluid_drive_kP.get();
-        driveConfiguration.slot0.kI = Config.fluid_drive_kI.get();
-        driveConfiguration.slot0.kD = Config.fluid_drive_kD.get();
-        driveConfiguration.slot0.kF = Config.fluid_drive_kFF.get();
-        driveConfiguration.slot0.integralZone = Config.fluid_drive_kIZone.get();
-        
-        TalonFXConfiguration steeringConfiguration = new TalonFXConfiguration();
-
-        steeringConfiguration.slot0.kP = Config.fluid_steering_kP.get();
-        steeringConfiguration.slot0.kI = Config.fluid_steering_kI.get();
-        steeringConfiguration.slot0.kD = Config.fluid_steering_kD.get();
-        steeringConfiguration.slot0.kF = Config.fluid_steering_kFF.get();
-        steeringConfiguration.slot0.integralZone = Config.fluid_steering_kIZone.get();
+        steeringFalcon.config_kP(0, Config.fluid_drive_kP.get(), Config.CAN_TIMEOUT_SHORT);
+        steeringFalcon.config_kI(0, Config.fluid_drive_kI.get(), Config.CAN_TIMEOUT_SHORT);
+        steeringFalcon.config_kD(0, Config.fluid_drive_kD.get(), Config.CAN_TIMEOUT_SHORT);
+        steeringFalcon.config_kF(0, Config.fluid_drive_kFF.get(), Config.CAN_TIMEOUT_SHORT);
+        steeringFalcon.config_IntegralZone(0, Config.fluid_drive_kIZone.get(), Config.CAN_TIMEOUT_SHORT);
         
     }
 
