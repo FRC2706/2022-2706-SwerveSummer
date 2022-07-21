@@ -43,12 +43,35 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
+
+        //Configure default commands
+        DriveSubsystem.getInstance().setDefaultCommand(
+                // The left stick controls translation of the robot.
+                // Turning is controlled by the X axis of the right stick.
+                new RunCommand(
+                        () -> DriveSubsystem.getInstance().drive(
+                                driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y),
+                                driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X),
+                                driverStick.getRawAxis(Config.RIGHT_CONTROL_STICK_X),
+                                true),
+                        DriveSubsystem.getInstance()));
+
+        //SINGLE MODULE CONTROL, REMOVE WHEN SWITCHING TO 4 MODULES
+        //DriveSubsystem.getInstance().setDefaultCommand(
+                    //new ModuleAngleFromJoystick(() -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y), 
+                                                //() -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X),
+                                                //DriveSubsystem.getInstance()));
+    }
+
+    /**
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
+     * subclasses ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and 
+     * then calling passing it to a {@link JoystickButton}.
+     */
+    private void configureButtonBindings() {
         Command updateModulesPID = new InstantCommand(DriveSubsystem.getInstance()::updateModulesPID, DriveSubsystem.getInstance());
         new JoystickButton(driverStick, XboxController.Button.kStart.value).whenPressed(updateModulesPID);
-
-        Command updateLampreyOffset = new InstantCommand(DriveSubsystem.getInstance()::resetEncodersFromLamprey, DriveSubsystem.getInstance());
-        new JoystickButton(driverStick, XboxController.Button.kBack.value).whenPressed(updateLampreyOffset);
-
 
         Command angleSetPoint1 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{new SwerveModuleState(0, Rotation2d.fromDegrees(0))}), DriveSubsystem.getInstance());
         new JoystickButton(driverStick, XboxController.Button.kA.value).whenHeld(angleSetPoint1).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
@@ -61,34 +84,6 @@ public class RobotContainer {
         
         Command speedSetPoint2 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{new SwerveModuleState(-0.5, Rotation2d.fromDegrees(0))}), DriveSubsystem.getInstance());
         new JoystickButton(driverStick, XboxController.Button.kY.value).whenHeld(speedSetPoint2).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
-
-
-        // Configure default commands
-        // DriveSubsystem.getInstance().setDefaultCommand(
-        //         // The left stick controls translation of the robot.
-        //         // Turning is controlled by the X axis of the right stick.
-        //         new RunCommand(
-        //                 () -> DriveSubsystem.getInstance().drive(
-        //                         driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y),
-        //                         driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X),
-        //                         driverStick.getRawAxis(Config.RIGHT_CONTROL_STICK_X),
-        //                         true),
-        //                 DriveSubsystem.getInstance()));
-
-        // SINGLE MODULE CONTROL, REMOVE WHEN SWITCHING TO 4 MODULES
-        DriveSubsystem.getInstance().setDefaultCommand(
-                    new ModuleAngleFromJoystick(() -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y), 
-                                                () -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X),
-                                                DriveSubsystem.getInstance()));
-    }
-
-    /**
-     * Use this method to define your button->command mappings. Buttons can be
-     * created by instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-     * subclasses ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and 
-     * then calling passing it to a {@link JoystickButton}.
-     */
-    private void configureButtonBindings() {
     }
 
     /**
