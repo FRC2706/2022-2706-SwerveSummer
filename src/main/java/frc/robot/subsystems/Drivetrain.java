@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.SwerveModuleFalcon;
+import frc.robot.config.Config;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -166,13 +167,13 @@ public class Drivetrain extends SubsystemBase {
         //                       int encoderCanID, double encoderOffset, String ModuleName)
 
         m_frontLeftModule = new SwerveModuleFalcon(RobotMap.CANID.FL_DRIVE_FALCON,
-                                                   TalonFXInvertType.Clockwise,
-                                                   true,
+                                                   Config.INVERTED_FRONT_LEFT_DRIVE,
+                                                   Config.SENSOR_PHASE_FRONT_LEFT_DRIVE,
                                                    RobotMap.CANID.FL_STEER_FALCON,
-                                                   TalonFXInvertType.Clockwise,
-                                                   true,
+                                                   Config.INVERTED_FRONT_LEFT_STEERING,
+                                                   Config.SENSOR_PHASE_FRONT_LEFT_STEERING,
                                                    RobotMap.CANID.FL_STEER_ENCODER,
-                                                   -Math.toRadians(155 + 180),
+                                                   Config.FL_ENCODER_OFFSET,
                                                    "Front Left Module" );
 
         // m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
@@ -183,13 +184,13 @@ public class Drivetrain extends SubsystemBase {
         //         RobotMap.CANID.FR_STEER_ENCODER, -Math.toRadians(94 + 180));
 
         m_frontRightModule = new SwerveModuleFalcon(RobotMap.CANID.FR_DRIVE_FALCON,
-                                                        TalonFXInvertType.Clockwise,
-                                                        true,
+                                                        Config.INVERTED_FRONT_RIGHT_DRIVE,
+                                                        Config.SENSOR_PHASE_FRONT_RIGHT_DRIVE,
                                                         RobotMap.CANID.FR_STEER_FALCON,
-                                                        TalonFXInvertType.Clockwise,
-                                                        true,
+                                                        Config.INVERTED_FRONT_RIGHT_STEERING,
+                                                        Config.SENSOR_PHASE_FRONT_RIGHT_STEERING,
                                                         RobotMap.CANID.FR_STEER_ENCODER,
-                                                        -Math.toRadians(94 + 180),
+                                                        Config.FR_ENCODER_OFFSET,
                                                         "Front Right Module" );
 
         // m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
@@ -200,13 +201,13 @@ public class Drivetrain extends SubsystemBase {
         //         RobotMap.CANID.BL_STEER_ENCODER, -Math.toRadians(200 + 180));
 
         m_backLeftModule = new SwerveModuleFalcon(RobotMap.CANID.BL_DRIVE_FALCON,
-                                                TalonFXInvertType.Clockwise,
-                                                true,
+                                                Config.INVERTED_REAR_LEFT_DRIVE,
+                                                Config.SENSOR_PHASE_REAR_LEFT_DRIVE,
                                                 RobotMap.CANID.BL_STEER_FALCON,
-                                                TalonFXInvertType.Clockwise,
-                                                true,
+                                                Config.INVERTED_REAR_LEFT_STEERING,
+                                                Config.SENSOR_PHASE_REAR_LEFT_STEERING,
                                                 RobotMap.CANID.BL_STEER_ENCODER,
-                                                -Math.toRadians(200 + 180),
+                                                Config.RL_ENCODER_OFFSET,
                                                 "Back Left Module" );
         
         // m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
@@ -217,13 +218,13 @@ public class Drivetrain extends SubsystemBase {
         //         RobotMap.CANID.BR_STEER_ENCODER, -Math.toRadians(135 + 180));
         
         m_backRightModule = new SwerveModuleFalcon(RobotMap.CANID.BR_DRIVE_FALCON,
-                                                TalonFXInvertType.Clockwise,
-                                                true,
+                                                Config.INVERTED_REAR_RIGHT_DRIVE,
+                                                Config.SENSOR_PHASE_REAR_RIGHT_DRIVE,
                                                 RobotMap.CANID.BR_STEER_FALCON,
-                                                TalonFXInvertType.Clockwise,
-                                                true,
+                                                Config.INVERTED_REAR_RIGHT_STEERING,
+                                                Config.SENSOR_PHASE_REAR_RIGHT_STEERING,
                                                 RobotMap.CANID.BR_STEER_ENCODER,
-                                                -Math.toRadians(135 + 180),
+                                                Config.RR_ENCODER_OFFSET,
                                                 "Back Right Module" );
 
         temp1.setNeutralMode(nm);
