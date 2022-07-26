@@ -187,7 +187,7 @@ public class SwerveModuleFalcon {
         steeringFalcon.config_kI(0, Config.fluid_steering_kI.get(), Config.CAN_TIMEOUT_SHORT);
         steeringFalcon.config_kD(0, Config.fluid_steering_kD.get(), Config.CAN_TIMEOUT_SHORT);
         steeringFalcon.config_kF(0, Config.fluid_steering_kFF.get(), Config.CAN_TIMEOUT_SHORT);
-        steeringFalcon.config_IntegralZone(0, Config.fluid_drive_kIZone.get(), Config.CAN_TIMEOUT_SHORT);
+        steeringFalcon.config_IntegralZone(0, Config.fluid_steering_kIZone.get(), Config.CAN_TIMEOUT_SHORT);
         
     }
 
