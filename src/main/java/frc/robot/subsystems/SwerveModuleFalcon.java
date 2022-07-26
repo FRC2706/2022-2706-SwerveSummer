@@ -172,7 +172,7 @@ public class SwerveModuleFalcon {
      */
     public void updateSteeringFromCanCoder() {
         double angle = Math.toRadians(encoder.getAbsolutePosition());
-        CheckError.ctre(driveFalcon.setSelectedSensorPosition(angle / Config.STEERING_SENSOR_POS_CONVERSION, 0, Config.CAN_TIMEOUT_SHORT), "Failed to set Falcon 500 encoder position");
+        CheckError.ctre(steeringFalcon.setSelectedSensorPosition(angle / Config.STEERING_SENSOR_POS_CONVERSION, 0, Config.CAN_TIMEOUT_SHORT), "Failed to set Falcon 500 encoder position");
         currentCanCoderEntry.setDouble(angle);
     }
 
@@ -183,10 +183,10 @@ public class SwerveModuleFalcon {
         driveFalcon.config_kF(0, Config.fluid_drive_kFF.get(), Config.CAN_TIMEOUT_SHORT);
         driveFalcon.config_IntegralZone(0, Config.fluid_drive_kIZone.get(), Config.CAN_TIMEOUT_SHORT);
 
-        steeringFalcon.config_kP(0, Config.fluid_drive_kP.get(), Config.CAN_TIMEOUT_SHORT);
-        steeringFalcon.config_kI(0, Config.fluid_drive_kI.get(), Config.CAN_TIMEOUT_SHORT);
-        steeringFalcon.config_kD(0, Config.fluid_drive_kD.get(), Config.CAN_TIMEOUT_SHORT);
-        steeringFalcon.config_kF(0, Config.fluid_drive_kFF.get(), Config.CAN_TIMEOUT_SHORT);
+        steeringFalcon.config_kP(0, Config.fluid_steering_kP.get(), Config.CAN_TIMEOUT_SHORT);
+        steeringFalcon.config_kI(0, Config.fluid_steering_kI.get(), Config.CAN_TIMEOUT_SHORT);
+        steeringFalcon.config_kD(0, Config.fluid_steering_kD.get(), Config.CAN_TIMEOUT_SHORT);
+        steeringFalcon.config_kF(0, Config.fluid_steering_kFF.get(), Config.CAN_TIMEOUT_SHORT);
         steeringFalcon.config_IntegralZone(0, Config.fluid_drive_kIZone.get(), Config.CAN_TIMEOUT_SHORT);
         
     }
