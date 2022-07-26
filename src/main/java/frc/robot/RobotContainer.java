@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ModuleAngleFromJoystick;
+import frc.robot.commands.ResetGyro;
 import frc.robot.config.Config;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,6 +36,7 @@ public class RobotContainer {
 
     // The driver's controller
     Joystick driverStick = new Joystick(0);
+    Joystick controlStick = new Joystick(1);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -69,21 +71,35 @@ public class RobotContainer {
      * subclasses ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and 
      * then calling passing it to a {@link JoystickButton}.
      */
+
+
     private void configureButtonBindings() {
+        SwerveModuleState state1 = new SwerveModuleState(0, Rotation2d.fromDegrees(0));
+        SwerveModuleState state2 = new SwerveModuleState(0, Rotation2d.fromDegrees(90));
+        SwerveModuleState state3 = new SwerveModuleState(-0.5, Rotation2d.fromDegrees(0));
+        SwerveModuleState state4 = new SwerveModuleState(0.5, Rotation2d.fromDegrees(0));
+
         Command updateModulesPID = new InstantCommand(DriveSubsystem.getInstance()::updateModulesPID, DriveSubsystem.getInstance());
         new JoystickButton(driverStick, XboxController.Button.kStart.value).whenPressed(updateModulesPID);
 
-        Command angleSetPoint1 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{new SwerveModuleState(0, Rotation2d.fromDegrees(0))}), DriveSubsystem.getInstance());
+        Command angleSetPoint1 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state1, state1, state1, state1}), DriveSubsystem.getInstance());
         new JoystickButton(driverStick, XboxController.Button.kA.value).whenHeld(angleSetPoint1).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
         
-        Command angleSetPoint2 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{new SwerveModuleState(0, Rotation2d.fromDegrees(90))}), DriveSubsystem.getInstance());
+        Command angleSetPoint2 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state2, state1, state1, state1}), DriveSubsystem.getInstance());
         new JoystickButton(driverStick, XboxController.Button.kB.value).whenHeld(angleSetPoint2).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
+
+        Command angleSetPoint3 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state2, state2, state2, state2}), DriveSubsystem.getInstance());
+        new JoystickButton(driverStick, XboxController.Button.kLeftBumper.value).whenHeld(angleSetPoint3).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
         
-        Command speedSetPoint1 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{new SwerveModuleState(0.5, Rotation2d.fromDegrees(0))}), DriveSubsystem.getInstance());
+        Command speedSetPoint1 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state3, state3, state3, state3}), DriveSubsystem.getInstance());
         new JoystickButton(driverStick, XboxController.Button.kX.value).whenHeld(speedSetPoint1).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
         
-        Command speedSetPoint2 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{new SwerveModuleState(-0.5, Rotation2d.fromDegrees(0))}), DriveSubsystem.getInstance());
+        Command speedSetPoint2 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state4, state4, state4, state4}), DriveSubsystem.getInstance());
         new JoystickButton(driverStick, XboxController.Button.kY.value).whenHeld(speedSetPoint2).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
+
+        new JoystickButton(driverStick, XboxController.Button.kStart.value).whenHeld(new ResetGyro());
+
+        
     }
 
     /**
