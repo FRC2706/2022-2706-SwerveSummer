@@ -107,9 +107,9 @@ public class SwerveModuleFalcon {
         swerveModuleTable = NetworkTableInstance.getDefault().getTable(tableName);
 
         desiredSpeedEntry = swerveModuleTable.getEntry("Desired speed (m/s)");
-        desiredAngleEntry = swerveModuleTable.getEntry("Desired angle (radians)");
+        desiredAngleEntry = swerveModuleTable.getEntry("Desired angle (degrees)");
         currentSpeedEntry = swerveModuleTable.getEntry("Current speed (m/s)");
-        currentAngleEntry = swerveModuleTable.getEntry("Current angle (radians)");
+        currentAngleEntry = swerveModuleTable.getEntry("Current angle (degrees)");
         speedError = swerveModuleTable.getEntry("speed Error");
         angleError = swerveModuleTable.getEntry("angle Error");
         currentCanCoderEntry = swerveModuleTable.getEntry("CanCoder measurement");
