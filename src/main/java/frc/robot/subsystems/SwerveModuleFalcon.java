@@ -133,19 +133,34 @@ public class SwerveModuleFalcon {
         // Optimize the reference state to avoid spinning further than 90 degrees
         double measuredVelocity = getVelocity();
         Rotation2d measuredAngle = getSteeringAngle();
-        SwerveModuleState state = SwerveModuleState.optimize(desiredState, measuredAngle);
+
+        double deltaAngle = desiredState.angle.getRadians() - measuredAngle.getRadians();
+        //make sure deltaAngle in [0,2pi]
+        deltaAngle %= 2.0*Math.PI;
+        if (deltaAngle < 0.0)
+        deltaAngle += 2.0*Math.PI;
+
+        //make detlaAngle in [-pi, pi]
+        if ( deltaAngle > Math.PI && deltaAngle <= 2*Math.PI)
+        {
+            deltaAngle -= 2*Math.PI;
+        }
+
+        Rotation2d currentAngle = new Rotation2d(deltaAngle + desiredState.angle.getRadians() );
+        //make sure (desiredState.angle - currentAngle) difference is [-pi, pi]
+        SwerveModuleState state = SwerveModuleState.optimize(desiredState, currentAngle);
         double velocity = state.speedMetersPerSecond;
-        Rotation2d angle = ContinousPIDSparkMax.calculate(state.angle, measuredAngle);
+        //Rotation2d angle = ContinousPIDSparkMax.calculate(state.angle, measuredAngle);
         
         driveFalcon.set(ControlMode.Velocity, velocity / Config.DRIVE_SENSOR_VEL_CONVERSION);
-        steeringFalcon.set(ControlMode.Position, angle.getRadians() / Config.STEERING_SENSOR_POS_CONVERSION);
+        steeringFalcon.set(ControlMode.Position, state.angle.getRadians() / Config.STEERING_SENSOR_POS_CONVERSION);
 
         desiredSpeedEntry.setDouble(velocity);
-        desiredAngleEntry.setDouble(angle.getDegrees());
+        desiredAngleEntry.setDouble(state.angle.getDegrees());
         currentSpeedEntry.setDouble(measuredVelocity);
         currentAngleEntry.setDouble(measuredAngle.getDegrees());
         speedError.setDouble(velocity - measuredVelocity);
-        angleError.setDouble(angle.getDegrees() - measuredAngle.getDegrees());
+        angleError.setDouble(state.angle.getDegrees() - measuredAngle.getDegrees());
     }
 
     /**
@@ -173,7 +188,7 @@ public class SwerveModuleFalcon {
      */
     public void updateSteeringFromCanCoder() {
         double angle = Math.toRadians(encoder.getAbsolutePosition());
-        CheckError.ctre(driveFalcon.setSelectedSensorPosition(angle / Config.STEERING_SENSOR_POS_CONVERSION, 0, Config.CAN_TIMEOUT_SHORT), 
+        CheckError.ctre(steeringFalcon.setSelectedSensorPosition(angle / Config.STEERING_SENSOR_POS_CONVERSION, 0, Config.CAN_TIMEOUT_SHORT), 
                         "Failed to set Falcon 500 encoder position");
         currentCanCoderEntry.setDouble(angle);
     }

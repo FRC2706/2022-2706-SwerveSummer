@@ -176,9 +176,7 @@ public final class Config {
     public static final TalonFXInvertType INVERTED_FRONT_RIGHT_DRIVE = INVERTED_DRIVE;
     public static final TalonFXInvertType INVERTED_REAR_RIGHT_DRIVE = INVERTED_DRIVE;
 
-    private static final TalonFXInvertType INVERTED_STEERING = DRIVE_RATIO.getConfiguration().isSteerInverted() 
-                                                              ? TalonFXInvertType.Clockwise : TalonFXInvertType.CounterClockwise;
-
+    private static final TalonFXInvertType INVERTED_STEERING = TalonFXInvertType.CounterClockwise;
     public static final TalonFXInvertType INVERTED_FRONT_LEFT_STEERING = INVERTED_STEERING;
     public static final TalonFXInvertType INVERTED_REAR_LEFT_STEERING = INVERTED_STEERING;
     public static final TalonFXInvertType INVERTED_FRONT_RIGHT_STEERING = INVERTED_STEERING;
