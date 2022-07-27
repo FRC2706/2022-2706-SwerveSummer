@@ -4,6 +4,13 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -23,6 +30,15 @@ public class Robot extends TimedRobot {
 
     private RobotContainer m_robotContainer;
 
+    String straightForwardPath = "./PathWeaver/output/StraightForward.wpilib.json";
+    public static Trajectory trajStraightForwardPath = new Trajectory();
+    String arcPath = "./PathWeaver/output/Arc.wpilib.json";
+    public static Trajectory trajArcPath = new Trajectory();
+    String sCurvePath = "./PathWeaver/output/SCurve.wpilib.json";
+    public static Trajectory trajSCurve = new Trajectory();
+    String longPath = "./PathWeaver/output/LongPath.wpilib.json";
+    public static Trajectory trajLongPath = new Trajectory();
+
     /**
      * This function is run when the robot is first started up and should be used
      * for any
@@ -33,6 +49,22 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our
         // autonomous chooser on the dashboard.
+        try {
+            Path path1 = Filesystem.getDeployDirectory().toPath().resolve(straightForwardPath);
+            trajStraightForwardPath = TrajectoryUtil.fromPathweaverJson(path1);
+            Path path2 = Filesystem.getDeployDirectory().toPath().resolve(arcPath);
+            trajArcPath = TrajectoryUtil.fromPathweaverJson(path2);
+            Path path3 = Filesystem.getDeployDirectory().toPath().resolve(sCurvePath);
+            trajSCurve = TrajectoryUtil.fromPathweaverJson(path3);
+            Path path4 = Filesystem.getDeployDirectory().toPath().resolve(longPath);
+            trajLongPath = TrajectoryUtil.fromPathweaverJson(path4);
+        } catch (IOException ex) {
+            DriverStation.reportError("Unable to open trajectory: " , ex.getStackTrace());
+        }
+
+
+
+
         m_robotContainer = new RobotContainer();
     }
 

@@ -4,6 +4,7 @@
 
 package frc.robot.config;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,15 +27,15 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  */
 public final class Config {
     /* Drive Constants */
-    public static final int CANID_FRONT_LEFT_DRIVE = 6;
-    public static final int CANID_REAR_LEFT_DRIVE = 0;
-    public static final int CANID_FRONT_RIGHT_DRIVE = 0;
-    public static final int CANID_REAR_RIGHT_DRIVE = 0;
+    public static final int CANID_FRONT_LEFT_DRIVE = 3;
+    public static final int CANID_REAR_LEFT_DRIVE = 1;
+    public static final int CANID_FRONT_RIGHT_DRIVE = 5;
+    public static final int CANID_REAR_RIGHT_DRIVE = 7;
 
-    public static final int CANID_FRONT_LEFT_STEERING = 5;
-    public static final int CANID_REAR_LEFT_STEERING = 0;
-    public static final int CANID_FRONT_RIGHT_STEERING = 0;
-    public static final int CANID_REAR_RIGHT_STEERING = 0;
+    public static final int CANID_FRONT_LEFT_STEERING = 4;
+    public static final int CANID_REAR_LEFT_STEERING = 2;
+    public static final int CANID_FRONT_RIGHT_STEERING = 6;
+    public static final int CANID_REAR_RIGHT_STEERING = 8;
 
     public static final double turningEncoderConstant = (2*Math.PI)/8.0;
     public static final double drivetrainEncoderConstant = 0.1016*Math.PI*(1/(60*7.615));
@@ -106,10 +107,10 @@ public final class Config {
 	public static FluidConstant<Double> fluid_steering_kIZone = new FluidConstant<>("Steering kIZone", steering_kI, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
     // Distance between centers of right and left wheels on robot
-    public static final double kTrackWidth = 0.5;
+    public static final double kTrackWidth = 0.6;
 
     // Distance between front and back wheels on robot
-    public static final double kWheelBase = 0.7;
+    public static final double kWheelBase = 0.6;
     public static double kLampreyOffsetFL = 0.0;
     public static double kLampreyOffsetRL = 0.0;
     public static double kLampreyOffsetFR = 0.0;
@@ -138,7 +139,7 @@ public final class Config {
 
     /* Module Constants */
     // The absolute max speed that a module can reach.
-    public static final double kMaxAttainableWheelSpeed = 3.0;
+    public static final double kMaxAttainableWheelSpeed = 2.0;
 
     public static final double kWheelDiameterMeters = 0.1016;
 
@@ -182,6 +183,10 @@ public final class Config {
     public static final double FR_ENCODER_OFFSET = -(94 + 180);
     public static final double RL_ENCODER_OFFSET = -(200 + 180);
     public static final double RR_ENCODER_OFFSET = -(135 + 180);
+    
+    public static final NeutralMode DRIVE_NEUTRAL_MODE = NeutralMode.Brake;
+    public static final NeutralMode STEERING_NEUTRAL_MODE = NeutralMode.Brake;
+
 
 	
 }

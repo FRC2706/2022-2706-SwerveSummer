@@ -13,11 +13,19 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.config.Config;
 
 public class DriveSubsystem extends SubsystemBase {
+    private NetworkTable table = NetworkTableInstance.getDefault().getTable("DriveTrain");
+    private NetworkTableEntry gyroEntry = table.getEntry("RawGyro");
+    private NetworkTableEntry xEntry = table.getEntry("OdometryX");
+    private NetworkTableEntry yEntry = table.getEntry("OdometryY");
+    private NetworkTableEntry rotEntry = table.getEntry("OdometryRot");
     // Instance for singleton class
     private static DriveSubsystem instance;
 
@@ -35,7 +43,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 
     // Odometry class for tracking robot pose
-    SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(Config.kDriveKinematics, Rotation2d.fromDegrees(getGyro()));
+    SwerveDriveOdometry m_odometry;
 
     /** Get instance of singleton class */
     public static DriveSubsystem getInstance() {
@@ -49,17 +57,25 @@ public class DriveSubsystem extends SubsystemBase {
         gyro = new AHRS(Port.kMXP);
         gyro.reset();
         gyro.calibrate();
+        m_odometry = new SwerveDriveOdometry(Config.kDriveKinematics, Rotation2d.fromDegrees(getGyro()));
     }
 
     @Override
     public void periodic() {
+        double currentGyro = getGyro();
         // Update the odometry in the periodic block
         m_odometry.update(
-                Rotation2d.fromDegrees(getGyro()),
+                Rotation2d.fromDegrees(currentGyro),
                 m_frontLeft.getState(),
                 m_frontRight.getState(),
                 m_rearLeft.getState(),
                 m_rearRight.getState());
+        
+        gyroEntry.setDouble(currentGyro);
+        xEntry.setDouble(getPose().getX());
+        yEntry.setDouble(getPose().getY());
+        rotEntry.setDouble(getPose().getRotation().getDegrees());
+        
     }
 
     /**
@@ -148,6 +164,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void updateModulesPID(){
         m_frontLeft.updatePIDValues();
+        m_frontRight.updatePIDValues();
+        m_rearLeft.updatePIDValues();
+        m_rearRight.updatePIDValues();
     }
 
     public void resetEncodersFromCanCoder() {

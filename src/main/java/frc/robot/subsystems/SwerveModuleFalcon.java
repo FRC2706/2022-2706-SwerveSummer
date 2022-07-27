@@ -64,7 +64,7 @@ public class SwerveModuleFalcon {
 
         driveFalcon.setInverted(driveInverted); // GRABBED FROM SDS CODE, MOVE TO Config.java
         driveFalcon.setSensorPhase(driveSensorPhase); // GRABBED FROM SDS CODE, MOVE TO Config.java
-        driveFalcon.setNeutralMode(NeutralMode.Brake); // Need a Config.DRIVE_NEUTRAL_MODE
+        driveFalcon.setNeutralMode(Config.DRIVE_NEUTRAL_MODE); // Need a Config.DRIVE_NEUTRAL_MODE
         driveFalcon.enableVoltageCompensation(true); // Related to driveConfiguration.voltageCompSaturation
         
             
@@ -87,7 +87,7 @@ public class SwerveModuleFalcon {
 
         steeringFalcon.setSensorPhase(steeringSensorPhase); // GRABBED FROM SDS CODE, MOVE TO Config.java
         steeringFalcon.setInverted(steeringInverted); // GRABBED FROM SDS CODE, MOVE TO Config.java
-        steeringFalcon.setNeutralMode(NeutralMode.Brake); // Need a Config.steering_NEUTRAL_MODE
+        steeringFalcon.setNeutralMode(Config.STEERING_NEUTRAL_MODE); // Need a Config.steering_NEUTRAL_MODE
         steeringFalcon.enableVoltageCompensation(true); // Related to steeringConfiguration.voltageCompSaturation
 
         
@@ -100,8 +100,6 @@ public class SwerveModuleFalcon {
         encoder = new CANCoder(encoderCanID);
         CheckError.ctre(encoder.configAllSettings(encoderConfiguration), "Failed to configure CANCoder");
         CheckError.ctre(encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, Config.CANCODER_STATUS_FRAME_SENSOR_DATA, Config.CAN_TIMEOUT_SHORT), "Failed to configure CANCoder update rate");
-    
-        updateSteeringFromCanCoder();
 
         String tableName = "Swerve Chassis/SwerveModule" + ModuleName;
         swerveModuleTable = NetworkTableInstance.getDefault().getTable(tableName);
@@ -113,6 +111,8 @@ public class SwerveModuleFalcon {
         speedError = swerveModuleTable.getEntry("speed Error");
         angleError = swerveModuleTable.getEntry("angle Error");
         currentCanCoderEntry = swerveModuleTable.getEntry("CanCoder measurement");
+
+        updateSteeringFromCanCoder();
     }
 
     /**
