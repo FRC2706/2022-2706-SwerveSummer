@@ -148,7 +148,7 @@ public class Drivetrain extends SubsystemBase {
 
     private void resetModules(NeutralMode nm) {
 
-        final Mk4SwerveModuleHelper.GearRatio DRIVE_RATIO = Mk4SwerveModuleHelper.GearRatio.L1;
+        //final Mk4SwerveModuleHelper.GearRatio DRIVE_RATIO = Mk4SwerveModuleHelper.GearRatio.L1;
 
         TalonFX temp1 = new TalonFX(RobotMap.CANID.FL_DRIVE_FALCON);
         TalonFX temp2 = new TalonFX(RobotMap.CANID.FR_DRIVE_FALCON);
@@ -270,6 +270,7 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void periodic() {
 
+        //Note: m_chassisSpeeds is set by drive()
         m_states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(m_states, MAX_VELOCITY_METERS_PER_SECOND);
         SmartDashboard.putString("Speeds", m_chassisSpeeds.toString());
@@ -289,6 +290,52 @@ public class Drivetrain extends SubsystemBase {
         // m_backRightModule.set(m_states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
         //         m_states[3].angle.getRadians());
     }
+
+
+    //-----------------------------------------------------------------
+    // following methods are used for debugging
+    // **********need to comment out periodic() method.***************
+    //------------------------------------------------------------------
+    /**
+     * Sets the swerve ModuleStates.
+     *
+     * @param desiredStates The desired SwerveModule states.
+     */
+    public void setModuleStates(SwerveModuleState[] desiredStates) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(
+                desiredStates, Config.kMaxAttainableWheelSpeed);
+        m_frontLeftModule.setDesiredState(desiredStates[0]);
+        m_frontRightModule.setDesiredState(desiredStates[1]);
+        m_backLeftModule.setDesiredState(desiredStates[2]);
+        m_backRightModule.setDesiredState(desiredStates[3]);
+    }
+
+    public void updateModulesPID(){
+        m_frontLeftModule.updatePIDValues();
+        m_frontRightModule.updatePIDValues();
+        m_backLeftModule.updatePIDValues();
+        m_backRightModule.updatePIDValues();
+    }
+
+    public void resetEncodersFromCanCoder() {
+        m_frontLeftModule.updateSteeringFromCanCoder();
+        m_frontRightModule.updateSteeringFromCanCoder();
+        m_backLeftModule.updateSteeringFromCanCoder();
+        m_backRightModule.updateSteeringFromCanCoder();
+    }
+
+    /**
+     * Standard stop motors method for every subsystem.
+     */
+    public void stopMotors() {
+        m_frontLeftModule.stopMotors();
+        m_backLeftModule.stopMotors();
+        m_frontRightModule.stopMotors();
+        m_backRightModule.stopMotors();
+    }
+
+    //--------------------------------------------------------------------
+
 
     // -------------------- Kinematics and Swerve Module Status Public Access
     // Methods --------------------

@@ -5,9 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.DriveCommand;
 
 import frc.robot.subsystems.Drivetrain;
@@ -40,6 +44,7 @@ public class RobotContainer {
    * commands.
    */
   public static void init() {
+
     drivetrain.setDefaultCommand(new DriveCommand(drivetrain));
     
     // Configure the button bindings
@@ -55,11 +60,22 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private static void configureButtonBindings() {
+   
+    // SwerveModuleState state1 = new SwerveModuleState(0, Rotation2d.fromDegrees(0));
+    // SwerveModuleState state2 = new SwerveModuleState(0, Rotation2d.fromDegrees(90));
+    // SwerveModuleState state3 = new SwerveModuleState(-0.5, Rotation2d.fromDegrees(0));
+    // SwerveModuleState state4 = new SwerveModuleState(0.5, Rotation2d.fromDegrees(0));
 
-     // TODO: Disable binding for competition use
+    // OI.driverkStartButton.whenPressed(() ->drivetrain.updateModulesPID());   
 
-     //kBack button
+    // Command angleSetPoint1 = new RunCommand(() -> drivetrain.setModuleStates(new SwerveModuleState[]{state1, state1, state1, state1}), drivetrain);
+    // Command stopState = new InstantCommand(drivetrain::stopMotors,drivetrain);  
+    //OI.driverkAButton.whenHeld(angleSetPoint1).whenReleased(stopState);
+
+     //kBack button: reset gyro
     OI.zeroButton.whenPressed(() -> gyro.resetGyro());
+
+
        
   }
   /**

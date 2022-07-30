@@ -84,27 +84,33 @@ public class OI {
      */
     private static class Bindings {
         /** Button to fire ball from shooter */
-        static final Button SHOOTER_FIRE_BUTTON = XboxController.Button.kB;
+        static final Button DRIVER_KB = XboxController.Button.kB;
+        static final Button DRIVER_KA = XboxController.Button.kA;
+        static final Button DRIVER_KX = XboxController.Button.kX;
+        static final Button DRIVER_KY = XboxController.Button.kY;
+
+        static final Button DRIVER_KSTART = XboxController.Button.kStart;
         /** Button to re-zero gyro */
         static final Button ZERO_GYRO = XboxController.Button.kBack;
         /** Button to intake ball manually*/
-        static final Button INTAKE_BUTTON = XboxController.Button.kRightBumper;
+        static final Button DRIVER_RIGHTBUMPER = XboxController.Button.kRightBumper;
         /** Button to pick up balls automatically */
-        static final Button BALL_TRACKING_BUTTON = XboxController.Button.kLeftBumper;
-        /** Button to drive at reduced speed */
-        static final Button SLOW_DRIVE_BUTTON = XboxController.Button.kRightBumper;
+        static final Button DIRVER_LEFTBUMPER = XboxController.Button.kLeftBumper;
 
-        //Climber Button
-        static final Button CLIMBER_BUTTON = XboxController.Button.kLeftBumper;
+        // /** Button to drive at reduced speed */
+        // static final Button SLOW_DRIVE_BUTTON = XboxController.Button.kRightBumper;
 
-        //Operator adjustment buttons
-        static final Button OPERATOREVALUATION_UNDERSHOOT = XboxController.Button.kX;
-        static final Button OPERATOREVALUATION_OVERSHOOT = XboxController.Button.kB;
-        static final Button OPERATOREVALUATION_SHOTHIT = XboxController.Button.kA;
-        static final Button OPERATOREVALUATION_BOUNCEOUT = XboxController.Button.kY;
+        // //Climber Button
+        // static final Button CLIMBER_BUTTON = XboxController.Button.kLeftBumper;
 
-        static final Button RELEASE_BALL_BUTTON = XboxController.Button.kBack;
-        static final Button MANUAL_CLIMB_BUTTON = XboxController.Button.kStart;
+        // //Operator adjustment buttons
+        // static final Button OPERATOREVALUATION_UNDERSHOOT = XboxController.Button.kX;
+        // static final Button OPERATOREVALUATION_OVERSHOOT = XboxController.Button.kB;
+        // static final Button OPERATOREVALUATION_SHOTHIT = XboxController.Button.kA;
+        // static final Button OPERATOREVALUATION_BOUNCEOUT = XboxController.Button.kY;
+
+        // static final Button RELEASE_BALL_BUTTON = XboxController.Button.kBack;
+        // static final Button MANUAL_CLIMB_BUTTON = XboxController.Button.kStart;
     }
 
     /** Port for controller used by driver */
@@ -117,35 +123,35 @@ public class OI {
     /** Controller used by driver, mapped to {@link #OPERATOR_CONTROLLER_PORT} */
     public static final XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
 
-    /** button for shoot command. Mapped to {@link Bindings#SHOOTER_FIRE_BUTTON} */
-    public static final JoystickButton shootButton = new JoystickButton(driverController, Bindings.SHOOTER_FIRE_BUTTON.value);
+    public static final JoystickButton driverkAButton = new JoystickButton(operatorController, Bindings.DRIVER_KA.value);
+    public static final JoystickButton driverkBButton = new JoystickButton(driverController, Bindings.DRIVER_KB.value);
+    public static final JoystickButton driverkXButton = new JoystickButton(driverController, Bindings.DRIVER_KX.value);
+    public static final JoystickButton driverkYButton = new JoystickButton(driverController, Bindings.DRIVER_KY.value);
+
+    public static final JoystickButton driverkStartButton = new JoystickButton(driverController, Bindings.DRIVER_KSTART.value);
+    
     /** Example button. Mapped to {@link Bindings#ZERO_GYRO} */
+    //kBack
     public static final JoystickButton zeroButton = new JoystickButton(driverController, Bindings.ZERO_GYRO.value);
-    /** Button to deploy intake for 5 seconds. Mapped to {@link Bindings#INTAKE_BUTTON} */
-    public static final JoystickButton intakeButton = new JoystickButton(operatorController, Bindings.INTAKE_BUTTON.value);
-    /** Ball tracking button. Mapped to {@link Bindings#BALL_TRACKING_BUTTON} */
-    public static final JoystickButton ballTrackingButton = new JoystickButton(driverController, Bindings.BALL_TRACKING_BUTTON.value);
-    
-    /** Drive reduced speed button. Mapped to {@link Bindings#SLOW_DRIVE_BUTTON} */
-    public static final JoystickButton slowDriveButton = new JoystickButton(driverController, Bindings.SLOW_DRIVE_BUTTON.value);
 
-    /** undershoot button. Mapped to {@link Bindings#OPERATOREVALUATION_UNDERSHOOT} */
-    public static final JoystickButton undershootButton = new JoystickButton(operatorController, Bindings.OPERATOREVALUATION_UNDERSHOOT.value);
-    /** overshoot button. Mapped to {@link Bindings#OPERATOREVALUATION_OVERSHOOT} */
-    public static final JoystickButton overshootButton = new JoystickButton(operatorController, Bindings.OPERATOREVALUATION_OVERSHOOT.value);
-    /** hit shot button. Mapped to {@link Bindings#OPERATOREVALUATION_SHOTHIT} */
-    public static final JoystickButton shothitButton = new JoystickButton(operatorController, Bindings.OPERATOREVALUATION_SHOTHIT.value);
-    /** bounceout button. Mapped to {@link Bindings#OPERATOREVALUATION_BOUNCEOUT} */
-    public static final JoystickButton bounceoutButton = new JoystickButton(operatorController, Bindings.OPERATOREVALUATION_BOUNCEOUT.value);
-    
-    /** climb button. Mapped to {@link Bindings#CLIMBER_BUTTON} */
-    public static final JoystickButton climbButton = new JoystickButton(operatorController, Bindings.CLIMBER_BUTTON.value);
 
-    /** climb button. Mapped to {@link Bindings#MANUAL_CLIMB_BUTTON} */
-    public static final JoystickButton manualClimbButton = new JoystickButton(operatorController, Bindings.MANUAL_CLIMB_BUTTON.value);
+    // /** undershoot button. Mapped to {@link Bindings#OPERATOREVALUATION_UNDERSHOOT} */
+    // public static final JoystickButton undershootButton = new JoystickButton(operatorController, Bindings.OPERATOREVALUATION_UNDERSHOOT.value);
+    // /** overshoot button. Mapped to {@link Bindings#OPERATOREVALUATION_OVERSHOOT} */
+    // public static final JoystickButton overshootButton = new JoystickButton(operatorController, Bindings.OPERATOREVALUATION_OVERSHOOT.value);
+    // /** hit shot button. Mapped to {@link Bindings#OPERATOREVALUATION_SHOTHIT} */
+    // public static final JoystickButton shothitButton = new JoystickButton(operatorController, Bindings.OPERATOREVALUATION_SHOTHIT.value);
+    // /** bounceout button. Mapped to {@link Bindings#OPERATOREVALUATION_BOUNCEOUT} */
+    // public static final JoystickButton bounceoutButton = new JoystickButton(operatorController, Bindings.OPERATOREVALUATION_BOUNCEOUT.value);
     
-    /** climb button. Mapped to {@link Bindings#CLIMBER_BUTTON} */
-    public static final JoystickButton releaseBallButton = new JoystickButton(operatorController, Bindings.RELEASE_BALL_BUTTON.value);
+    // /** climb button. Mapped to {@link Bindings#CLIMBER_BUTTON} */
+    // public static final JoystickButton climbButton = new JoystickButton(operatorController, Bindings.CLIMBER_BUTTON.value);
+
+    // /** climb button. Mapped to {@link Bindings#MANUAL_CLIMB_BUTTON} */
+    // public static final JoystickButton manualClimbButton = new JoystickButton(operatorController, Bindings.MANUAL_CLIMB_BUTTON.value);
+    
+    // /** climb button. Mapped to {@link Bindings#CLIMBER_BUTTON} */
+    // public static final JoystickButton releaseBallButton = new JoystickButton(operatorController, Bindings.RELEASE_BALL_BUTTON.value);
 
 
 
