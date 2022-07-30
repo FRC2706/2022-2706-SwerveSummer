@@ -104,28 +104,28 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        int selectorIndex = 0;
+        int selectorIndex = 4;
         if(selectorIndex == 0){
             return null;
         }
         else if(selectorIndex == 1){
 			return new SequentialCommandGroup(
 				new ResetOdometry(Robot.trajStraightForwardPath.getInitialPose()),
-				new SwerveCommandMerge(Robot.trajStraightForwardPath),
+				new SwerveCommandMerge(Robot.trajStraightForwardPath, Rotation2d.fromDegrees(0)),
 				new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance())
 			);
         }
         else if(selectorIndex == 2){
 			return new SequentialCommandGroup(
 				new ResetOdometry(Robot.trajArcPath.getInitialPose()),
-				new SwerveCommandMerge(Robot.trajArcPath),
+				new SwerveCommandMerge(Robot.trajArcPath, Robot.trajArcPath.getInitialPose().getRotation()),
 				new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance())
 			);  
         }
         else if(selectorIndex == 3){
 			return new SequentialCommandGroup(
 				new ResetOdometry(Robot.trajSCurve.getInitialPose()),
-				new SwerveCommandMerge(Robot.trajSCurve),
+				new SwerveCommandMerge(Robot.trajSCurve, Robot.trajArcPath.getInitialPose().getRotation()),
 				new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance())
 			);  
         }

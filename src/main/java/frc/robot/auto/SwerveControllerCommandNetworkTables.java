@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -176,8 +177,10 @@ public class SwerveControllerCommandNetworkTables extends CommandBase {
 
     var targetChassisSpeeds =
         m_controller.calculate(currentPose, desiredState, desiredRotation);
+    targetChassisSpeeds = new  ChassisSpeeds(targetChassisSpeeds.vxMetersPerSecond, targetChassisSpeeds.vyMetersPerSecond, 0);
     var targetModuleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
 
+    System.out.println("Initial Gyro: " + m_trajectory.getInitialPose() + " TargetHeading: " + desiredRotation.getDegrees() + ", actual: " + currentPose.getRotation().getDegrees() + ", error: " + poseError.getRotation().getDegrees());
     m_outputModuleStates.accept(targetModuleStates);
   }
 

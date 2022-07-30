@@ -30,13 +30,13 @@ public class Robot extends TimedRobot {
 
     private RobotContainer m_robotContainer;
 
-    String straightForwardPath = "./PathWeaver/output/StraightForward.wpilib.json";
+    String straightForwardPath = "output/StraightForward.wpilib.json";
     public static Trajectory trajStraightForwardPath = new Trajectory();
-    String arcPath = "./PathWeaver/output/Arc.wpilib.json";
+    String arcPath = "output/Arc.wpilib.json";
     public static Trajectory trajArcPath = new Trajectory();
-    String sCurvePath = "./PathWeaver/output/SCurve.wpilib.json";
+    String sCurvePath = "output/SCurve.wpilib.json";
     public static Trajectory trajSCurve = new Trajectory();
-    String longPath = "./PathWeaver/output/LongPath.wpilib.json";
+    String longPath = "output/LongPath.wpilib.json";
     public static Trajectory trajLongPath = new Trajectory();
 
     /**
