@@ -150,11 +150,11 @@ public class SwerveModuleFalcon {
         Rotation2d currentAngle = new Rotation2d(- deltaAngle + desiredState.angle.getRadians() );
         
         //Optimize the reference state to avoid spinning further than 90 degrees
-        SwerveModuleState state = SwerveModuleState.optimize(desiredState, currentAngle);
-        double velocity = state.speedMetersPerSecond;
+        SwerveModuleState updatedDesiredstate = SwerveModuleState.optimize(desiredState, currentAngle);
+        double velocity = updatedDesiredstate.speedMetersPerSecond;
 
         //deltaAngle now is in [-pi/2, pi/2], which is the angle to be adjusted.
-        deltaAngle = state.angle.minus(currentAngle).getRadians();
+        deltaAngle = updatedDesiredstate.angle.minus(currentAngle).getRadians();
 
         //todo:
        //-- Rotation2d angle = ContinousPIDSparkMax.calculate(state.angle, measuredAngle);
@@ -163,11 +163,11 @@ public class SwerveModuleFalcon {
         steeringFalcon.set(ControlMode.Position, (measuredAngle.getRadians() + deltaAngle)/ Config.STEERING_SENSOR_POS_CONVERSION);
 
         desiredSpeedEntry.setDouble(velocity);
-        desiredAngleEntry.setDouble(state.angle.getDegrees());
+        desiredAngleEntry.setDouble(updatedDesiredstate.angle.getDegrees());
         currentSpeedEntry.setDouble(measuredVelocity);
         currentAngleEntry.setDouble(measuredAngle.getDegrees());
         speedError.setDouble(velocity - measuredVelocity);
-        angleError.setDouble(state.angle.getDegrees() - measuredAngle.getDegrees());
+        angleError.setDouble(updatedDesiredstate.angle.getDegrees() - measuredAngle.getDegrees());
     }
 
     /**
