@@ -34,16 +34,19 @@ public class RobotContainer {
   public static final Drivetrain drivetrain = new Drivetrain();
   //public static final SwerveOdometry odometry = new SwerveOdometry();
   
-
+  public RobotContainer()
+  {
+    drivetrain.setDefaultCommand(new DriveCommand(drivetrain));
+    
+    // Configure the button bindings
+    configureButtonBindings();
+  }
   /**
    * Initialise the container for the robot. Contains subsystems, OI devices, and
    * commands.
    */
   public static void init() {
-    drivetrain.setDefaultCommand(new DriveCommand(drivetrain));
     
-    // Configure the button bindings
-    configureButtonBindings();
   }
 
   /**
