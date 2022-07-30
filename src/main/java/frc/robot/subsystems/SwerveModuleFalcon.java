@@ -130,7 +130,7 @@ public class SwerveModuleFalcon {
      * @param desiredState Desired state with speed and angle.
      */
     public void setDesiredState(SwerveModuleState desiredState) {
-        // Optimize the reference state to avoid spinning further than 90 degrees
+        //get the measure values from the embedded sensors
         double measuredVelocity = getVelocity();
         Rotation2d measuredAngle = getSteeringAngle();
 
@@ -140,20 +140,27 @@ public class SwerveModuleFalcon {
         if (deltaAngle < 0.0)
         deltaAngle += 2.0*Math.PI;
 
-        //make detlaAngle in [-pi, pi]
+        //make sure detlaAngle in [-pi, pi]
         if ( deltaAngle > Math.PI && deltaAngle <= 2*Math.PI)
         {
             deltaAngle -= 2*Math.PI;
         }
 
-        Rotation2d currentAngle = new Rotation2d(deltaAngle + desiredState.angle.getRadians() );
-        //make sure (desiredState.angle - currentAngle) difference is [-pi, pi]
+        //make sure (desiredState.angle - currentAngle) difference is [-pi, pi], which is what optimize() requires.
+        Rotation2d currentAngle = new Rotation2d(- deltaAngle + desiredState.angle.getRadians() );
+        
+        //Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = SwerveModuleState.optimize(desiredState, currentAngle);
         double velocity = state.speedMetersPerSecond;
-        //Rotation2d angle = ContinousPIDSparkMax.calculate(state.angle, measuredAngle);
+
+        //deltaAngle now is in [-pi/2, pi/2], which is the angle to be adjusted.
+        deltaAngle = state.angle.minus(currentAngle).getRadians();
+
+        //todo:
+       //-- Rotation2d angle = ContinousPIDSparkMax.calculate(state.angle, measuredAngle);
         
         driveFalcon.set(ControlMode.Velocity, velocity / Config.DRIVE_SENSOR_VEL_CONVERSION);
-        steeringFalcon.set(ControlMode.Position, state.angle.getRadians() / Config.STEERING_SENSOR_POS_CONVERSION);
+        steeringFalcon.set(ControlMode.Position, (measuredAngle.getRadians() + deltaAngle)/ Config.STEERING_SENSOR_POS_CONVERSION);
 
         desiredSpeedEntry.setDouble(velocity);
         desiredAngleEntry.setDouble(state.angle.getDegrees());
