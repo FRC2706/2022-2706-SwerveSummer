@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.auto.SwerveCommandMerge;
+import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ModuleAngleFromJoystick;
 import frc.robot.commands.ResetGyro;
 import frc.robot.commands.ResetOdometry;
@@ -50,16 +51,8 @@ public class RobotContainer {
 
 
         //Configure default commands
-        DriveSubsystem.getInstance().setDefaultCommand(
-                // The left stick controls translation of the robot.
-                // Turning is controlled by the X axis of the right stick.
-                new RunCommand(
-                        () -> DriveSubsystem.getInstance().drive(
-                                driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y) * Config.kMaxAttainableWheelSpeed,
-                                driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X) * Config.kMaxAttainableWheelSpeed,
-                                driverStick.getRawAxis(Config.RIGHT_CONTROL_STICK_X) * Config.kMaxAutoAngularSpeed,
-                                true),
-                        DriveSubsystem.getInstance()));
+        DriveSubsystem.getInstance().setDefaultCommand(new DriveCommand(driverStick));
+        
 
         //SINGLE MODULE CONTROL, REMOVE WHEN SWITCHING TO 4 MODULES
         //DriveSubsystem.getInstance().setDefaultCommand(
@@ -79,8 +72,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
         SwerveModuleState state1 = new SwerveModuleState(0, Rotation2d.fromDegrees(0));
         SwerveModuleState state2 = new SwerveModuleState(0, Rotation2d.fromDegrees(90));
-        SwerveModuleState state3 = new SwerveModuleState(-0.5, Rotation2d.fromDegrees(0));
-        SwerveModuleState state4 = new SwerveModuleState(0.5, Rotation2d.fromDegrees(0));
+        SwerveModuleState state3 = new SwerveModuleState(-2.0, Rotation2d.fromDegrees(0));
+        SwerveModuleState state4 = new SwerveModuleState(2.0, Rotation2d.fromDegrees(0));
 
         Command updateModulesPID = new InstantCommand(DriveSubsystem.getInstance()::updateModulesPID, DriveSubsystem.getInstance());
         new JoystickButton(driverStick, XboxController.Button.kStart.value).whenPressed(updateModulesPID);

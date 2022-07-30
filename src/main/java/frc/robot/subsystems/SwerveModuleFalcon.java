@@ -60,7 +60,7 @@ public class SwerveModuleFalcon {
 
         CheckError.ctre(driveFalcon.configAllSettings(driveConfiguration, Config.CAN_TIMEOUT_LONG), "Failed to configure drive Falcon 500 settings");
         CheckError.ctre(driveFalcon.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Config.CAN_TIMEOUT_SHORT), "Failed to set drive Falcon 500 feedback sensor");
-        CheckError.ctre(driveFalcon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, Config.STATUS_FRAME_GENERAL_PERIOD_MS, Config.CAN_TIMEOUT_SHORT), "Failed to configure drive Falcon status frame period");
+        //CheckError.ctre(driveFalcon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, Config.STATUS_FRAME_GENERAL_PERIOD_MS, Config.CAN_TIMEOUT_SHORT), "Failed to configure drive Falcon status frame period");
 
         driveFalcon.setInverted(driveInverted); // GRABBED FROM SDS CODE, MOVE TO Config.java
         driveFalcon.setSensorPhase(driveSensorPhase); // GRABBED FROM SDS CODE, MOVE TO Config.java
@@ -83,7 +83,7 @@ public class SwerveModuleFalcon {
 
         CheckError.ctre(steeringFalcon.configAllSettings(steeringConfiguration, Config.CAN_TIMEOUT_LONG), "Failed to configure steering Falcon 500 settings");
         CheckError.ctre(steeringFalcon.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Config.CAN_TIMEOUT_SHORT), "Failed to set steering Falcon 500 feedback sensor");
-        CheckError.ctre(steeringFalcon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, Config.STATUS_FRAME_GENERAL_PERIOD_MS, Config.CAN_TIMEOUT_SHORT), "Failed to configure steering Falcon status frame period"); // Reduce CAN status frame rates
+        //CheckError.ctre(steeringFalcon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, Config.STATUS_FRAME_GENERAL_PERIOD_MS, Config.CAN_TIMEOUT_SHORT), "Failed to configure steering Falcon status frame period"); // Reduce CAN status frame rates
 
         steeringFalcon.setSensorPhase(steeringSensorPhase); // GRABBED FROM SDS CODE, MOVE TO Config.java
         steeringFalcon.setInverted(steeringInverted); // GRABBED FROM SDS CODE, MOVE TO Config.java
@@ -129,7 +129,7 @@ public class SwerveModuleFalcon {
      *
      * @param desiredState Desired state with speed and angle.
      */
-    public void setDesiredState(SwerveModuleState desiredState) {
+    /*public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
         double measuredVelocity = getVelocity();
         Rotation2d measuredAngle = getSteeringAngle();
@@ -146,6 +146,39 @@ public class SwerveModuleFalcon {
         currentAngleEntry.setDouble(measuredAngle.getDegrees());
         speedError.setDouble(velocity - measuredVelocity);
         angleError.setDouble(angle.getDegrees() - measuredAngle.getDegrees());
+    }*/
+
+    public void setDesiredState(SwerveModuleState desiredState) {
+        //get the measure values from the embedded sensors
+        double measuredVelocity = getVelocity();
+        Rotation2d measuredAngle = getSteeringAngle();
+        double deltaAngle = desiredState.angle.getRadians() - measuredAngle.getRadians();
+        //make sure deltaAngle in [0,2pi]
+        deltaAngle %= 2.0*Math.PI;
+        if (deltaAngle < 0.0)
+        deltaAngle += 2.0*Math.PI;
+        //make sure detlaAngle in [-pi, pi]
+        if ( deltaAngle > Math.PI && deltaAngle <= 2*Math.PI)
+        {
+            deltaAngle -= 2*Math.PI;
+        }
+        //make sure (desiredState.angle - currentAngle) difference is [-pi, pi], which is what optimize() requires.
+        Rotation2d currentAngle = new Rotation2d(- deltaAngle + desiredState.angle.getRadians() );
+        //Optimize the reference state to avoid spinning further than 90 degrees
+        SwerveModuleState updatedDesiredstate = SwerveModuleState.optimize(desiredState, currentAngle);
+        double velocity = updatedDesiredstate.speedMetersPerSecond;
+        //deltaAngle now is in [-pi/2, pi/2], which is the angle to be adjusted.
+        deltaAngle = updatedDesiredstate.angle.minus(currentAngle).getRadians();
+        //todo:
+       //-- Rotation2d angle = ContinousPIDSparkMax.calculate(state.angle, measuredAngle);
+        driveFalcon.set(ControlMode.Velocity, velocity / Config.DRIVE_SENSOR_VEL_CONVERSION);
+        steeringFalcon.set(ControlMode.Position, (measuredAngle.getRadians() + deltaAngle)/ Config.STEERING_SENSOR_POS_CONVERSION);
+        desiredSpeedEntry.setDouble(velocity);
+        desiredAngleEntry.setDouble(updatedDesiredstate.angle.getDegrees());
+        currentSpeedEntry.setDouble(measuredVelocity);
+        currentAngleEntry.setDouble(measuredAngle.getDegrees());
+        speedError.setDouble(velocity - measuredVelocity);
+        angleError.setDouble(updatedDesiredstate.angle.getDegrees() - measuredAngle.getDegrees());
     }
 
     /**
@@ -172,7 +205,7 @@ public class SwerveModuleFalcon {
      */
     public void updateSteeringFromCanCoder() {
         double angle = Math.toRadians(encoder.getAbsolutePosition());
-        CheckError.ctre(steeringFalcon.setSelectedSensorPosition(angle / Config.STEERING_SENSOR_POS_CONVERSION, 0, Config.CAN_TIMEOUT_SHORT), "Failed to set Falcon 500 encoder position");
+        steeringFalcon.setSelectedSensorPosition(angle / Config.STEERING_SENSOR_POS_CONVERSION, 0, Config.CAN_TIMEOUT_SHORT);
         currentCanCoderEntry.setDouble(angle);
     }
 

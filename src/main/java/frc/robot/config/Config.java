@@ -65,11 +65,11 @@ public final class Config {
     public static final int CANID_FRONT_RIGHT_CANCODER = 11;
     public static final int CANID_REAR_RIGHT_CANCODER = 10;  
     
-    public static final double drive_kIZone = 0.15;
-    public static final double drive_kFF = 0.25; // These can also be module specific.
-    public static final double drive_kP = 0.2; // Hopefully they won't need to be.
-    public static final double drive_kI = 0.002; // Depends on hardware differences.
-    public static final double drive_kD =1.0;
+    public static final double drive_kIZone = 0.0;
+    public static final double drive_kFF = 0.05; // These can also be module specific.
+    public static final double drive_kP = 0.1; // Hopefully they won't need to be.
+    public static final double drive_kI = 0.0; // Depends on hardware differences.
+    public static final double drive_kD =0.0;
 	public static FluidConstant<Double> fluid_drive_kFF = new FluidConstant<>("Drive kFF", drive_kFF, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 
@@ -87,11 +87,19 @@ public final class Config {
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
     // Distance between centers of right and left wheels on robot
 
-    public static final double steering_kFF = 0;
-    public static final double steering_kP = 0.8;
-    public static final double steering_kI = 0.016;
-    public static final double steering_kD = 1.6;
-    public static final double steering_kIZone = 0.05; //5 degrees
+    //public static final double steering_kFF = 0.0;
+    //public static final double steering_kP = 0.3;
+    //public static final double steering_kI = 0.001;
+    //public static final double steering_kD = 0.2;
+    //public static final double steering_kIZone = 0.052; //5 degrees
+
+    public static final double steering_kFF = 0.0;
+    public static final double steering_kP = 0.2;
+    public static final double steering_kI = 0.0;
+    public static final double steering_kD = 0.1;
+    public static final double steering_kIZone = 0.0; //5 degrees
+
+
     public static FluidConstant<Double> fluid_steering_kFF = new FluidConstant<>("Steering kFF", steering_kFF, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 
@@ -139,7 +147,8 @@ public final class Config {
 
     /* Module Constants */
     // The absolute max speed that a module can reach.
-    public static final double kMaxAttainableWheelSpeed = 2.0;
+    public static final double kMaxAttainableWheelSpeed = 3.0;
+    public static final double kMaxTeleopAngularSpeed = Math.PI*2;
 
     public static final double kWheelDiameterMeters = 0.1016;
 
@@ -179,13 +188,27 @@ public final class Config {
     private static final double STEERING_GEAR_REDUCTION = (15.0 / 32.0) * (10.0 / 60.0); // THIS IS FOR THE MK4_L1
     public static final double STEERING_SENSOR_POS_CONVERSION = 2.0 * Math.PI / TICKS_PER_ROTATION * STEERING_GEAR_REDUCTION;
 
-    public static final double FL_ENCODER_OFFSET = -(155 + 180);
+    public static final double FL_ENCODER_OFFSET = -(155 + 180)-3.22;
     public static final double FR_ENCODER_OFFSET = -(94 + 180);
-    public static final double RL_ENCODER_OFFSET = -(200 + 180);
-    public static final double RR_ENCODER_OFFSET = -(135 + 180);
+    public static final double RL_ENCODER_OFFSET = -(200 + 180)-0.08;
+    public static final double RR_ENCODER_OFFSET = -(135 + 180)-1.24;
     
     public static final NeutralMode DRIVE_NEUTRAL_MODE = NeutralMode.Brake;
     public static final NeutralMode STEERING_NEUTRAL_MODE = NeutralMode.Brake;
+
+    public static final double  JOYSTICK_AXIS_DEADBAND = 0.1;
+
+    public static double removeJoystickDeadband(double value) {
+        if(value <= JOYSTICK_AXIS_DEADBAND && value >= 0){
+            return 0;
+        }
+        else if (value >= -JOYSTICK_AXIS_DEADBAND && value <= 0){
+            return 0;
+        }
+        else{
+            return value;
+        }
+    }
 
 
 	

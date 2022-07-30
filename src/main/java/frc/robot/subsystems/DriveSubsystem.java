@@ -62,6 +62,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        m_frontLeft.updateSteeringFromCanCoder();
+        m_frontRight.updateSteeringFromCanCoder();
+        m_rearLeft.updateSteeringFromCanCoder();
+        m_rearRight.updateSteeringFromCanCoder();
         double currentGyro = getGyro();
         // Update the odometry in the periodic block
         m_odometry.update(
