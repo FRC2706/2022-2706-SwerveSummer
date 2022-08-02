@@ -17,6 +17,8 @@ public class SwerveCommandMerge extends SwerveControllerCommandNetworkTables {
     static private Supplier<DriveSubsystem> sub = DriveSubsystem::getInstance;  
 
     /**
+     *  SwerveCommandMerge simplfies the construction of SwerveControllerCommands.
+     * 
      *  Creates a new SwerveControllerCommand which will ask the desiredRotation supplier
      *  for the desired heading at that point in time.
      * 
@@ -37,7 +39,7 @@ public class SwerveCommandMerge extends SwerveControllerCommandNetworkTables {
     }
 
     /**
-     *  Creates a new SwerveControllerCommand keep the heading locked in as 
+     *  Creates a new SwerveControllerCommand that keeps the heading locked in as 
      *  the final heading of the trajectory (like tank drive / Ramsete)
      *  (rotates to that heading and stays at that heading for the remainder of the path)
      * 
@@ -57,7 +59,7 @@ public class SwerveCommandMerge extends SwerveControllerCommandNetworkTables {
     }
 
     /**
-     *  Creates a new SwerveControllerCommand keep the heading locked in as 
+     *  Creates a new SwerveControllerCommand that keeps the heading locked in as 
      *  the given heading. 
      *  (rotates to that heading and stays at that heading for the remainder of the path)
      * 

@@ -27,9 +27,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class SwerveModuleFalcon {
 
-    TalonFX driveFalcon;
-    TalonFX steeringFalcon;
-    CANCoder encoder;
+    private TalonFX driveFalcon;
+    private TalonFX steeringFalcon;
+    private CANCoder encoder;
     private NetworkTable swerveModuleTable;
     private NetworkTableEntry desiredSpeedEntry;
     private NetworkTableEntry desiredAngleEntry;
@@ -38,8 +38,9 @@ public class SwerveModuleFalcon {
     private NetworkTableEntry speedError;
     private NetworkTableEntry angleError;
     private NetworkTableEntry currentCanCoderEntry;
+
     /**
-     * Constructs a SwerveModule.
+     * Constructs a SwerveModuleFalcon which controls a module that has 2 Falcons and a CanCoder.
      */
     public SwerveModuleFalcon(int driveCanID, TalonFXInvertType driveInverted, boolean driveSensorPhase, 
                               int steeringCanID, TalonFXInvertType steeringInverted, boolean steeringSensorPhase,
@@ -60,6 +61,8 @@ public class SwerveModuleFalcon {
 
         CheckError.ctre(driveFalcon.configAllSettings(driveConfiguration, Config.CAN_TIMEOUT_LONG), "Failed to configure drive Falcon 500 settings");
         CheckError.ctre(driveFalcon.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Config.CAN_TIMEOUT_SHORT), "Failed to set drive Falcon 500 feedback sensor");
+
+        // SDS code changes this sattus frame. It was removed because it might affect odoemtry (it says it changes the selected sensor on primary PID)
         //CheckError.ctre(driveFalcon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, Config.STATUS_FRAME_GENERAL_PERIOD_MS, Config.CAN_TIMEOUT_SHORT), "Failed to configure drive Falcon status frame period");
 
         driveFalcon.setInverted(driveInverted); // GRABBED FROM SDS CODE, MOVE TO Config.java
@@ -83,6 +86,8 @@ public class SwerveModuleFalcon {
 
         CheckError.ctre(steeringFalcon.configAllSettings(steeringConfiguration, Config.CAN_TIMEOUT_LONG), "Failed to configure steering Falcon 500 settings");
         CheckError.ctre(steeringFalcon.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Config.CAN_TIMEOUT_SHORT), "Failed to set steering Falcon 500 feedback sensor");
+        
+        // SDS code changes this sattus frame. It was removed because it might affect odoemtry (it says it changes the selected sensor on primary PID)
         //CheckError.ctre(steeringFalcon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, Config.STATUS_FRAME_GENERAL_PERIOD_MS, Config.CAN_TIMEOUT_SHORT), "Failed to configure steering Falcon status frame period"); // Reduce CAN status frame rates
 
         steeringFalcon.setSensorPhase(steeringSensorPhase); // GRABBED FROM SDS CODE, MOVE TO Config.java
@@ -117,6 +122,8 @@ public class SwerveModuleFalcon {
 
     /**
      * Returns the current state of the module.
+     * 
+     * Needed for SwerveDriveOdometry.
      *
      * @return The current state of the module.
      */

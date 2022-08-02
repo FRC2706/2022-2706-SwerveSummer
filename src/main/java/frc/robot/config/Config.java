@@ -66,10 +66,12 @@ public final class Config {
     public static final int CANID_REAR_RIGHT_CANCODER = 10;  
     
     public static final double drive_kIZone = 0.0;
-    public static final double drive_kFF = 0.05; // These can also be module specific.
-    public static final double drive_kP = 0.1; // Hopefully they won't need to be.
-    public static final double drive_kI = 0.0; // Depends on hardware differences.
+    public static final double drive_kFF = 0.05;
+    public static final double drive_kP = 0.1;
+    public static final double drive_kI = 0.0;
     public static final double drive_kD =0.0;
+
+    // FluidConstants to easily get values from networktables
 	public static FluidConstant<Double> fluid_drive_kFF = new FluidConstant<>("Drive kFF", drive_kFF, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 
@@ -85,21 +87,22 @@ public final class Config {
 
 	public static FluidConstant<Double> fluid_drive_kIZone = new FluidConstant<>("Drive kIZone", drive_kI, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
-    // Distance between centers of right and left wheels on robot
 
+    // We attempted our own tuning here
     //public static final double steering_kFF = 0.0;
     //public static final double steering_kP = 0.3;
     //public static final double steering_kI = 0.001;
     //public static final double steering_kD = 0.2;
     //public static final double steering_kIZone = 0.052; //5 degrees
 
+    // This is the SDS MK4 tuning
     public static final double steering_kFF = 0.0;
     public static final double steering_kP = 0.2;
     public static final double steering_kI = 0.0;
     public static final double steering_kD = 0.1;
     public static final double steering_kIZone = 0.0; //5 degrees
 
-
+    // FluidConstants to easily get values from networktables
     public static FluidConstant<Double> fluid_steering_kFF = new FluidConstant<>("Steering kFF", steering_kFF, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 
@@ -113,16 +116,22 @@ public final class Config {
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
 					
 	public static FluidConstant<Double> fluid_steering_kIZone = new FluidConstant<>("Steering kIZone", steering_kI, true)
+    
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
+
     // Distance between centers of right and left wheels on robot
     public static final double kTrackWidth = 0.6;
 
     // Distance between front and back wheels on robot
     public static final double kWheelBase = 0.6;
+
+    // Lamprey Encoder for the Swerge module
     public static double kLampreyOffsetFL = 0.0;
     public static double kLampreyOffsetRL = 0.0;
     public static double kLampreyOffsetFR = 0.0;
     public static double kLampreyOffsetRR = 0.0;
+
+    // FluidConstants to easily get values from networktables
     public static FluidConstant<Double> fluid_LampreyOffsetFL = new FluidConstant<>("Lamprey Offset Radians FL", kLampreyOffsetFL, true)
                     .registerToTable(NetworkTableInstance.getDefault().getTable("SwerveModule"));
     
@@ -160,11 +169,10 @@ public final class Config {
     public static int RIGHT_CONTROL_STICK_X = 4;
 
     /** Auto Constants */
-    public static final double kMaxAutoSpeed = 3; // m/s
-    public static final double kMaxAutoAcceleration = 3; // m/s/s
     public static final double kMaxAutoAngularSpeed = Math.PI; // rad/s
     public static final double kMaxAutoAngularAcceleration = Math.PI; // rad/s/s
 
+    // These are the WPILib defaults. They worked for our tests in kingston but could be fined tuned.
     public static final double kPXController = 1;
     public static final double kPYController = 1;
     public static final double kPThetaController = 1;
@@ -173,7 +181,7 @@ public final class Config {
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
             kMaxAutoAngularSpeed, kMaxAutoAngularAcceleration);
 
-				/** Stuff added to handle Falcons */
+	/** Stuff added to handle Falcons */
     public static final int CAN_TIMEOUT_SHORT = 100;
     public static final int CAN_TIMEOUT_LONG = 250;
     public static final int STATUS_FRAME_GENERAL_PERIOD_MS = 250;
@@ -188,6 +196,7 @@ public final class Config {
     private static final double STEERING_GEAR_REDUCTION = (15.0 / 32.0) * (10.0 / 60.0); // THIS IS FOR THE MK4_L1
     public static final double STEERING_SENSOR_POS_CONVERSION = 2.0 * Math.PI / TICKS_PER_ROTATION * STEERING_GEAR_REDUCTION;
 
+    // Encoder offsets for the CanCoder on the Mk4 modules
     public static final double FL_ENCODER_OFFSET = -(155 + 180)-3.22;
     public static final double FR_ENCODER_OFFSET = -(94 + 180);
     public static final double RL_ENCODER_OFFSET = -(200 + 180)-0.08;
@@ -198,18 +207,4 @@ public final class Config {
 
     public static final double  JOYSTICK_AXIS_DEADBAND = 0.1;
 
-    public static double removeJoystickDeadband(double value) {
-        if(value <= JOYSTICK_AXIS_DEADBAND && value >= 0){
-            return 0;
-        }
-        else if (value >= -JOYSTICK_AXIS_DEADBAND && value <= 0){
-            return 0;
-        }
-        else{
-            return value;
-        }
-    }
-
-
-	
 }

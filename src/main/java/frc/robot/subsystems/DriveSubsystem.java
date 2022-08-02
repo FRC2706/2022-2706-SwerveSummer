@@ -26,6 +26,7 @@ public class DriveSubsystem extends SubsystemBase {
     private NetworkTableEntry xEntry = table.getEntry("OdometryX");
     private NetworkTableEntry yEntry = table.getEntry("OdometryY");
     private NetworkTableEntry rotEntry = table.getEntry("OdometryRot");
+    
     // Instance for singleton class
     private static DriveSubsystem instance;
 
@@ -62,11 +63,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_frontLeft.updateSteeringFromCanCoder();
-        m_frontRight.updateSteeringFromCanCoder();
-        m_rearLeft.updateSteeringFromCanCoder();
-        m_rearRight.updateSteeringFromCanCoder();
         double currentGyro = getGyro();
+
         // Update the odometry in the periodic block
         m_odometry.update(
                 Rotation2d.fromDegrees(currentGyro),
@@ -140,6 +138,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     /**
      * Returns the heading of the robot.
+     * 
+     * This is private because only the odoemtry get's the raw gyro value. 
+     * Everything else get's the gyro value from the odometry since it does an offset.
      *
      * @return the robot's heading in degrees, from -180 to 180
      */
@@ -149,6 +150,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     /**
      * Returns the heading of the robot.
+     * 
+     * Uses this method for heading. Odometry does an offset to ensure this has the correct origin.
      *
      * @return the robot's heading in degrees, from -180 to 180
      */
