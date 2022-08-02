@@ -9,16 +9,23 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.auto.SwerveCommandMerge;
+import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ModuleAngleFromJoystick;
+import frc.robot.commands.ResetGyro;
+import frc.robot.commands.ResetOdometry;
 import frc.robot.config.Config;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
@@ -33,6 +40,7 @@ public class RobotContainer {
 
     // The driver's controller
     Joystick driverStick = new Joystick(0);
+    Joystick controlStick = new Joystick(1);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -41,23 +49,16 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-        // Configure default commands
-        // DriveSubsystem.getInstance().setDefaultCommand(
-        //         // The left stick controls translation of the robot.
-        //         // Turning is controlled by the X axis of the right stick.
-        //         new RunCommand(
-        //                 () -> DriveSubsystem.getInstance().drive(
-        //                         driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y),
-        //                         driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X),
-        //                         driverStick.getRawAxis(Config.RIGHT_CONTROL_STICK_X),
-        //                         true),
-        //                 DriveSubsystem.getInstance()));
+        //Configure default commands
+        DriveSubsystem.getInstance().setDefaultCommand(new DriveCommand(driverStick));
+        
 
-        // SINGLE MODULE CONTROL, REMOVE WHEN SWITCHING TO 4 MODULES
-        DriveSubsystem.getInstance().setDefaultCommand(
-                    new ModuleAngleFromJoystick(() -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y), 
-                                                () -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X),
-                                                DriveSubsystem.getInstance()));
+        //SINGLE MODULE CONTROL, REMOVE WHEN SWITCHING TO 4 MODULES
+        //DriveSubsystem.getInstance().setDefaultCommand(
+                    //new ModuleAngleFromJoystick(() -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_Y), 
+                                                //() -> driverStick.getRawAxis(Config.LEFT_CONTROL_STICK_X),
+                                                //DriveSubsystem.getInstance()));
+
     }
 
     /**
@@ -66,7 +67,35 @@ public class RobotContainer {
      * subclasses ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and 
      * then calling passing it to a {@link JoystickButton}.
      */
+
+
     private void configureButtonBindings() {
+        SwerveModuleState state1 = new SwerveModuleState(0, Rotation2d.fromDegrees(0));
+        SwerveModuleState state2 = new SwerveModuleState(0, Rotation2d.fromDegrees(90));
+        SwerveModuleState state3 = new SwerveModuleState(-2.0, Rotation2d.fromDegrees(0));
+        SwerveModuleState state4 = new SwerveModuleState(2.0, Rotation2d.fromDegrees(0));
+
+        Command updateModulesPID = new InstantCommand(DriveSubsystem.getInstance()::updateModulesPID, DriveSubsystem.getInstance());
+        new JoystickButton(driverStick, XboxController.Button.kStart.value).whenPressed(updateModulesPID);
+
+        Command angleSetPoint1 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state1, state1, state1, state1}), DriveSubsystem.getInstance());
+        new JoystickButton(driverStick, XboxController.Button.kA.value).whenHeld(angleSetPoint1).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
+        
+        Command angleSetPoint2 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state2, state1, state1, state1}), DriveSubsystem.getInstance());
+        new JoystickButton(driverStick, XboxController.Button.kB.value).whenHeld(angleSetPoint2).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
+
+        Command angleSetPoint3 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state2, state2, state2, state2}), DriveSubsystem.getInstance());
+        new JoystickButton(driverStick, XboxController.Button.kLeftBumper.value).whenHeld(angleSetPoint3).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
+        
+        Command speedSetPoint1 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state3, state3, state3, state3}), DriveSubsystem.getInstance());
+        new JoystickButton(driverStick, XboxController.Button.kX.value).whenHeld(speedSetPoint1).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
+        
+        Command speedSetPoint2 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state4, state4, state4, state4}), DriveSubsystem.getInstance());
+        new JoystickButton(driverStick, XboxController.Button.kY.value).whenHeld(speedSetPoint2).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
+
+        new JoystickButton(driverStick, XboxController.Button.kBack.value).whenHeld(new ResetGyro());  
+
+        
     }
 
     /**
@@ -75,43 +104,38 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // Create config for trajectory
-        TrajectoryConfig config = new TrajectoryConfig(
-                Config.kMaxAutoSpeed,
-                Config.kMaxAutoAcceleration)
-                        // Add kinematics to ensure max speed is actually obeyed
-                        .setKinematics(Config.kDriveKinematics);
-
-        // An example trajectory to follow. All units in meters.
-        Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0, 0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(3, 0, new Rotation2d(0)),
-                config);
-
-        var thetaController = new ProfiledPIDController(
-                Config.kPThetaController, 0, 0, Config.kThetaControllerConstraints);
-        thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-        SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-                exampleTrajectory,
-                DriveSubsystem.getInstance()::getPose, // Functional interface to feed supplier
-                Config.kDriveKinematics,
-
-                // Position controllers
-                new PIDController(Config.kPXController, 0, 0),
-                new PIDController(Config.kPYController, 0, 0),
-                thetaController,
-                DriveSubsystem.getInstance()::setModuleStates,
-                DriveSubsystem.getInstance());
-
-        // Reset odometry to the starting pose of the trajectory.
-        DriveSubsystem.getInstance().resetOdometry(exampleTrajectory.getInitialPose());
-
-        // Run path following command, then stop at the end.
-        return swerveControllerCommand.andThen(() -> DriveSubsystem.getInstance().drive(0, 0, 0, false));
+        int selectorIndex = 4;
+        if(selectorIndex == 0){
+            return null;
+        }
+        else if(selectorIndex == 1){
+			return new SequentialCommandGroup(
+				new ResetOdometry(Robot.trajStraightForwardPath.getInitialPose()),
+				new SwerveCommandMerge(Robot.trajStraightForwardPath, Rotation2d.fromDegrees(0)),
+				new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance())
+			);
+        }
+        else if(selectorIndex == 2){
+			return new SequentialCommandGroup(
+				new ResetOdometry(Robot.trajArcPath.getInitialPose()),
+				new SwerveCommandMerge(Robot.trajArcPath, Robot.trajArcPath.getInitialPose().getRotation()),
+				new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance())
+			);  
+        }
+        else if(selectorIndex == 3){
+			return new SequentialCommandGroup(
+				new ResetOdometry(Robot.trajSCurve.getInitialPose()),
+				new SwerveCommandMerge(Robot.trajSCurve, Robot.trajArcPath.getInitialPose().getRotation()),
+				new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance())
+			);  
+        }
+        else if(selectorIndex == 4){
+			return new SequentialCommandGroup(
+				new ResetOdometry(Robot.trajLongPath.getInitialPose()),
+				new SwerveCommandMerge(Robot.trajLongPath),
+				new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance())
+			); 
+        }
+		return null;
     }
 }
