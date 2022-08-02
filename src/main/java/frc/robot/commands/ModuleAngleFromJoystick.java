@@ -20,7 +20,9 @@ public class ModuleAngleFromJoystick extends CommandBase {
     private final double DEAD_BAND = 0.3;
     private final double MAX_SPEED = 1.0;
 
-    /** Creates a new AngleTest. */
+    /** 
+     * ModuleAngleFromJoystick will control a single module from a joystick.
+     */
     public ModuleAngleFromJoystick(Supplier<Double> xAxis, Supplier<Double> yAxis, SubsystemBase requirement) { 
 
         this.xAxis = xAxis;

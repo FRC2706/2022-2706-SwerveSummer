@@ -41,7 +41,9 @@ public class SwerveModule {
     private NetworkTableEntry lampreyAngle;
 
     /**
-     * Constructs a SwerveModule.
+     * TODO: Change the filename of this class to SwerveModuleSparkMax
+     * 
+     * Constructs a SwerveModuleSparkMax which controls a module that has 2 CanSparkMaxs and a Lamprey encoder.
      */
     public SwerveModule(int driveCanID, boolean driveInverted, int turningCanID, boolean turningInverted, int kLampreyChannel, FluidConstant<Double> lampreyOffset, String ModuleName) {
 

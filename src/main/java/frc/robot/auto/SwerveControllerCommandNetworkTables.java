@@ -21,11 +21,15 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
+ * THIS IS A COPIED VERSION OF ({@link SwerveControllerCommand})
+ * IT WAS MODIFIED TO ADD NETWORKTABLE VALUES
+ * 
  * A command that uses two PID controllers ({@link PIDController}) and a ProfiledPIDController
  * ({@link ProfiledPIDController}) to follow a trajectory {@link Trajectory} with a swerve drive.
  *
@@ -48,7 +52,7 @@ public class SwerveControllerCommandNetworkTables extends CommandBase {
   private final Consumer<SwerveModuleState[]> m_outputModuleStates;
   private final Supplier<Rotation2d> m_desiredRotation;
 
-  // Added networktables
+  // ADDED NETWORKTABLES
   NetworkTable table = NetworkTableInstance.getDefault().getTable("Auto");
   NetworkTableEntry xError = table.getEntry("xError");
   NetworkTableEntry yError = table.getEntry("yError");
@@ -164,7 +168,7 @@ public class SwerveControllerCommandNetworkTables extends CommandBase {
     double curTime = m_timer.get();
     var desiredState = m_trajectory.sample(curTime);
 
-    // Added Networktables
+    // ADDED NETWORKTABLES
     Pose2d currentPose = m_pose.get();
     Pose2d poseError = desiredState.poseMeters.relativeTo(currentPose);
     xError.setDouble(poseError.getX());
@@ -177,10 +181,13 @@ public class SwerveControllerCommandNetworkTables extends CommandBase {
 
     var targetChassisSpeeds =
         m_controller.calculate(currentPose, desiredState, desiredRotation);
+
+    // THE LINE BELOW DISABLES ROTATION CONTROL. THIS WAS A TEMPORARY CHANGE IN KINGSTON BECAUSE ROTATION WAS CAUSING PROBLEMS BUT WE STILL WANTED FOOTAGE OF AUTO.
     targetChassisSpeeds = new  ChassisSpeeds(targetChassisSpeeds.vxMetersPerSecond, targetChassisSpeeds.vyMetersPerSecond, 0);
+    //
+
     var targetModuleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
 
-    System.out.println("Initial Gyro: " + m_trajectory.getInitialPose() + " TargetHeading: " + desiredRotation.getDegrees() + ", actual: " + currentPose.getRotation().getDegrees() + ", error: " + poseError.getRotation().getDegrees());
     m_outputModuleStates.accept(targetModuleStates);
   }
 

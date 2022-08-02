@@ -75,6 +75,7 @@ public class RobotContainer {
         SwerveModuleState state3 = new SwerveModuleState(-2.0, Rotation2d.fromDegrees(0));
         SwerveModuleState state4 = new SwerveModuleState(2.0, Rotation2d.fromDegrees(0));
 
+        // Updates the PID values from Networktables. Button: Start
         Command updateModulesPID = new InstantCommand(DriveSubsystem.getInstance()::updateModulesPID, DriveSubsystem.getInstance());
         new JoystickButton(driverStick, XboxController.Button.kStart.value).whenPressed(updateModulesPID);
 
@@ -93,6 +94,7 @@ public class RobotContainer {
         Command speedSetPoint2 = new RunCommand(() -> DriveSubsystem.getInstance().setModuleStates(new SwerveModuleState[]{state4, state4, state4, state4}), DriveSubsystem.getInstance());
         new JoystickButton(driverStick, XboxController.Button.kY.value).whenHeld(speedSetPoint2).whenReleased(new InstantCommand(DriveSubsystem.getInstance()::stopMotors, DriveSubsystem.getInstance()));
 
+        // Reset the gyro offset in odoemtry to 0. Button: Back
         new JoystickButton(driverStick, XboxController.Button.kBack.value).whenHeld(new ResetGyro());  
 
         
@@ -104,7 +106,9 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
+        // Hardcoded value to select autonomous. 
         int selectorIndex = 4;
+        
         if(selectorIndex == 0){
             return null;
         }
