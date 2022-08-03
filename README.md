@@ -14,6 +14,15 @@ Also supports Swerge V4 with SwerveModuleSparkMax however the DriveSubsystem nee
 # Going to Kingston to test code
 Thank you to team 7480 Machine Mavericks once again.
 
+## Lessons Learned / Interesting things to note
+
+- SwerveControllerCommand is awesome. It uses the trajectory objects to control the X and Y then it controls the heading of the robot separately.
+- We had issues controlling the heading of the robot in auto. I think the gyro was not rotating the correct direction for SwerveControllerCommand but I'm not sure (it needed to be multiplied by -1 I think)
+- We took advantage of the gyro offset inside SwerveDriveOdometry for Teleop. Since we also set odometry to the start of an auto path it means we can start the robot at any angle and when teleop starts it's already correct.
+- The code given by SDS doesn't run a PID loop on the velocity of the wheel. I think this is important for SwerveControllerCommand because when it asks kinematics to go at 2 meters per second it expects it to do it perfectly (and adjust the position later if it's not perfect)
+- We only tuned the F and P of the velocity PID loop. It seemed to work just fine with only these 2 terms (it was achieving the desired velocity with only a tiny degree of error).
+- SDS code changes the status frame of Status_1_General to 250 ms of all 8 falcons running the modules. Status frames, from what I understand, affect how often the CAN bus gets updated with specific values. Status_1_General says it's the "Feedback for selected sensor on primary PID[0]." I was scared this would affect odometry with outdated wheel velocities and steering angles so we didn't add this to our code.
+
 ## Teleop
 After tuning the PIDF and IZone values for the drive and steering motors, kinematics worked great to control the robot in teleop.
 
